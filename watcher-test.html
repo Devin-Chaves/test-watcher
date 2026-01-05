@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation</title>
+    <style>
+        /* ========================= DESKTOP MEGA (AS-IS) ========================= */
+        .ff-nav-container {
+            --ff-nav-backdrop-pad: 24px;
+        }
+
+        .ff-nav-container.ff-nav-container--animated {
+            overflow: hidden;
+            transition: height 220ms ease-out;
+            will-change: height;
+        }
+
+        .ff-nav-container.ff-nav-container--open::after {
+            content: "";
+            display: block;
+            height: var(--ff-nav-backdrop-pad);
+        }
+
+        #ff-mega .ff-mega__panel {
+            display: none;
+            opacity: 0;
+            transition: opacity 180ms ease-out;
+        }
+
+        #ff-mega .ff-mega__panel.ff-mega__panel--active {
+            display: block;
+            opacity: 1;
+        }
+
+        #ff-mega .ff-mega__cta {
+            display: none;
+        }
+
+        #ff-mega .ff-mega__cta.ff-mega__cta--active {
+            display: flex;
+        }
+
+        /* ========================= MOBILE NAV (OUTSIDE SHELL) + CHROME BEHAVIOR ========================= */
+        @media (min-width: 992px) {
+            [data-nav-mobile] {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 991px) {
+            [data-nav-mobile]{
+                display: none;
+                --ff-nav-mobile-top: 0px;
+                --ff-nav-mobile-chrome-h: 56px;
+            }
+
+            [data-nav-mobile].ff-nav-mobile--open{
+                display: block;
+                position: fixed;
+                left: 0;
+                right: 0;
+                top: var(--ff-nav-mobile-top);
+                bottom: 0;
+                z-index: 9999;
+                background: rgba(0,0,0,0.5);
+            }
+
+            .ff-nav-mobile__track{
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                background: #fff;
+                overflow: hidden;
+            }
+
+            /* ---------- Floating chrome (ONLY on layer 2+) ---------- */
+            .ff-nav-mobile__chrome{
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: var(--ff-nav-mobile-chrome-h);
+                background: #fff;
+                border-bottom: 1px solid rgba(0,0,0,0.08);
+                z-index: 10;
+                display: none;
+            }
+
+            [data-nav-mobile].ff-nav-mobile--chrome-on .ff-nav-mobile__chrome{
+                display: block;
+            }
+
+            /* Layout matches your actual markup: [back link] [title div] [close link] */
+            .ff-nav-mobile__chrome-inner{
+                height: 100%;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 0 16px;
+            }
+
+            .ff-nav-mobile__chrome-left{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                margin-left: -8px;
+                text-decoration: none;
+            }
+
+            .ff-nav-mobile__chrome-back-icon{
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .ff-nav-mobile__chrome-back-icon img{
+                width: 20px;
+                height: 20px;
+                display: block;
+            }
+
+            .ff-nav-mobile__chrome-title{
+                flex: 1 1 auto;
+                font-size: 18px;
+                font-weight: 500;
+                line-height: 1;
+                color: #111;
+                text-align: left;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding-right: 8px;
+            }
+
+            .ff-nav-mobile__chrome-close{
+                width: 44px;
+                height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: -8px;
+                text-decoration: none;
+            }
+
+            .ff-nav-mobile__chrome-close img{
+                width: 20px;
+                height: 20px;
+                display: block;
+            }
+
+            /* Panels stack + fade */
+            .ff-nav-mobile__panel{
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 200ms ease;
+                will-change: opacity;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                background: transparent;
+                padding-top: 0;
+            }
+
+            /* When chrome is on, ALL panels get padded down */
+            [data-nav-mobile].ff-nav-mobile--chrome-on .ff-nav-mobile__panel{
+                padding-top: var(--ff-nav-mobile-chrome-h);
+            }
+
+            /* When chrome is on, hide any in-panel headers so spacing is clean */
+            [data-nav-mobile].ff-nav-mobile--chrome-on .ff-nav-mobile__header{
+                display: none !important;
+            }
+
+            .ff-nav-mobile__panel.ff-nav-mobile__panel--active{
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .ff-nav-mobile__panel {
+                    transition: none;
+                }
+            }
+        }
+
+        body.ff-nav-mobile-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mqDesktop = window.matchMedia('(min-width: 992px)');
+            const mqMobile = window.matchMedia('(max-width: 991px)');
+
+            /* ========================= DESKTOP MEGA (UNCHANGED) ========================= */
+            (function initDesktopMega(){
+                const shell = document.querySelector('.ff-nav-container');
+                const region = shell && shell.querySelector('.ff-nav-region');
+                const navBar = region && region.querySelector('.ff-nav__bar');
+                const mega = document.getElementById('ff-mega');
+                if (!shell || !region || !navBar || !mega) return;
+
+                const panels = Array.from(mega.querySelectorAll('[data-menu-panel]'));
+                const triggers = Array.from(document.querySelectorAll('.ff-nav__links [data-menu-trigger]'));
+                const ctaSlot = mega.querySelector('.ff-mega__cta-slot');
+                const ctas = ctaSlot ? Array.from(ctaSlot.querySelectorAll('[data-menu-cta]')) : [];
+
+                if (!panels.length || !triggers.length) return;
+
+                let activeKey = null;
+                let isOpen = false;
+                let hoverTimeout = null;
+                let desktopInitialized = false;
+
+                function px(n){ return Number.isFinite(n) ? n : 0; }
+
+                function shellExtraBox() {
+                    const cs = getComputedStyle(shell);
+                    const pad = px(parseFloat(cs.paddingTop)) + px(parseFloat(cs.paddingBottom));
+                    const bor = px(parseFloat(cs.borderTopWidth)) + px(parseFloat(cs.borderBottomWidth));
+                    return { pad, bor, boxSizing: cs.boxSizing };
+                }
+
+                function setShellHeightFromContent(contentH) {
+                    const { pad, bor, boxSizing } = shellExtraBox();
+                    const outerH = contentH + pad + bor;
+                    const target = (boxSizing === 'border-box') ? outerH : contentH;
+                    shell.style.height = target + 'px';
+                }
+
+                function baseNavHeight() {
+                    return navBar.offsetHeight || 0;
+                }
+
+                function measureElement(el) {
+                    if (!el) return 0;
+                    const cs = getComputedStyle(el);
+                    const wasHidden = cs.display === 'none';
+                    const prev = { display: el.style.display, position: el.style.position, visibility: el.style.visibility, pointerEvents: el.style.pointerEvents };
+                    if (wasHidden) {
+                        el.style.display = 'block';
+                        el.style.position = 'absolute';
+                        el.style.visibility = 'hidden';
+                        el.style.pointerEvents = 'none';
+                    }
+                    const h = el.offsetHeight || 0;
+                    if (wasHidden) {
+                        el.style.display = prev.display;
+                        el.style.position = prev.position;
+                        el.style.visibility = prev.visibility;
+                        el.style.pointerEvents = prev.pointerEvents;
+                    }
+                    return h;
+                }
+
+                function panelForKey(key){
+                    return panels.find(p => p.dataset.menuPanel === key) || null;
+                }
+
+                function ctaForKey(key){
+                    return ctas.find(c => c.dataset.menuCta === key) || null;
+                }
+
+                function openExtra() {
+                    const cs = getComputedStyle(shell);
+                    return px(parseFloat(cs.getPropertyValue('--ff-nav-backdrop-pad'))) || 0;
+                }
+
+                function syncPanels(key) {
+                    panels.forEach(panel => panel.classList.toggle('ff-mega__panel--active', panel.dataset.menuPanel === key));
+                }
+
+                function syncCtas(key) {
+                    if (!ctas.length) return;
+                    ctas.forEach(cta => cta.classList.toggle('ff-mega__cta--active', cta.dataset.menuCta === key));
+                }
+
+                function setShellHeightForKey(key) {
+                    const navH = baseNavHeight();
+                    const panel = key ? panelForKey(key) : null;
+                    const cta = key ? ctaForKey(key) : null;
+                    const panelH = panel ? measureElement(panel) : 0;
+                    const ctaH = cta ? measureElement(cta) : 0;
+                    const contentH = navH + panelH + ctaH + (isOpen ? openExtra() : 0);
+                    setShellHeightFromContent(contentH);
+                }
+
+                function openMenu(key) {
+                    if (!key) return;
+                    isOpen = true;
+                    activeKey = key;
+                    shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
+                    syncPanels(key);
+                    syncCtas(key);
+                    requestAnimationFrame(() => setShellHeightForKey(key));
+                }
+
+                function closeMenu() {
+                    if (!isOpen) return;
+                    isOpen = false;
+                    activeKey = null;
+                    shell.classList.remove('ff-nav-container--open');
+                    setShellHeightFromContent(baseNavHeight());
+                    panels.forEach(p => p.classList.remove('ff-mega__panel--active'));
+                    ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
+                }
+
+                function attachDesktopHandlers() {
+                    if (desktopInitialized) return;
+                    desktopInitialized = true;
+                    shell.classList.add('ff-nav-container--animated');
+                    shell.classList.remove('ff-nav-container--open');
+                    setShellHeightFromContent(baseNavHeight());
+
+                    triggers.forEach(trigger => {
+                        const key = trigger.dataset.menuTrigger;
+                        if (!key) return;
+                        trigger.addEventListener('click', (e) => {
+                            if (mqDesktop.matches) e.preventDefault();
+                        });
+                        trigger.addEventListener('mouseenter', () => {
+                            if (!mqDesktop.matches) return;
+                            clearTimeout(hoverTimeout);
+                            openMenu(key);
+                        });
+                    });
+
+                    shell.addEventListener('mouseleave', () => {
+                        if (!mqDesktop.matches) return;
+                        clearTimeout(hoverTimeout);
+                        hoverTimeout = setTimeout(closeMenu, 150);
+                    });
+
+                    window.addEventListener('resize', () => {
+                        if (!mqDesktop.matches) return;
+                        if (!isOpen) setShellHeightFromContent(baseNavHeight());
+                        else if (activeKey) setShellHeightForKey(activeKey);
+                    });
+                }
+
+                function teardownDesktop() {
+                    desktopInitialized = false;
+                    isOpen = false;
+                    activeKey = null;
+                    clearTimeout(hoverTimeout);
+                    shell.classList.remove('ff-nav-container--animated', 'ff-nav-container--open');
+                    shell.style.removeProperty('height');
+                    panels.forEach(p => p.classList.remove('ff-mega__panel--active'));
+                    ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
+                }
+
+                if (mqDesktop.matches) attachDesktopHandlers();
+                mqDesktop.addEventListener('change', (e) => e.matches ? attachDesktopHandlers() : teardownDesktop());
+            })();
+
+            /* ========================= MOBILE NAV (STACK + FADE) + CHROME (LAYER 2+ ONLY) ========================= */
+            (function initMobileNav(){
+                const mobileRoot = document.querySelector('[data-nav-mobile]');
+                const toggleBtn = document.querySelector('[data-nav-toggle]');
+                if (!mobileRoot || !toggleBtn) return;
+
+                const panels = Array.from(mobileRoot.querySelectorAll('[data-mobile-panel]'));
+                if (!panels.length) return;
+
+                const panelByKey = new Map();
+                panels.forEach(p => panelByKey.set(p.getAttribute('data-mobile-panel'), p));
+
+                const chromeTitleEl = mobileRoot.querySelector('[data-mobile-chrome-title]');
+                const navBarEl = document.querySelector('.ff-nav__bar');
+
+                let navH = 56;
+                let isOpen = false;
+                let stack = ['root'];
+                let lastFocus = null;
+
+                function measureNavH(){
+                    const h = navBarEl && navBarEl.offsetHeight;
+                    navH = (h && h > 0) ? h : 56;
+                }
+
+                function currentKey(){
+                    return stack[stack.length - 1] || 'root';
+                }
+
+                function getPanelTitle(key){
+                    const panel = panelByKey.get(key);
+                    if (!panel) return '';
+
+                    const dt = (panel.dataset && panel.dataset.panelTitle) ? panel.dataset.panelTitle : panel.getAttribute('data-panel-title');
+                    if (dt && String(dt).trim()) return String(dt).trim();
+
+                    const labelled = panel.getAttribute('aria-labelledby');
+                    if (labelled) {
+                        const el = document.getElementById(labelled);
+                        if (el && el.textContent && el.textContent.trim()) return el.textContent.trim();
+                    }
+
+                    const t = panel.querySelector('.ff-nav-mobile__title');
+                    if (t && t.textContent && t.textContent.trim()) return t.textContent.trim();
+                    return '';
+                }
+
+                function syncChromeAndTop(){
+                    measureNavH();
+                    const isSub = stack.length > 1;
+                    mobileRoot.classList.toggle('ff-nav-mobile--chrome-on', isSub);
+                    mobileRoot.style.setProperty('--ff-nav-mobile-top', (isSub ? 0 : navH) + 'px');
+                    if (chromeTitleEl) chromeTitleEl.textContent = isSub ? (getPanelTitle(currentKey()) || '') : '';
+                }
+
+                function setAria() {
+                    toggleBtn.setAttribute('aria-expanded', String(isOpen));
+                    toggleBtn.setAttribute('aria-label', isOpen ? 'Close primary navigation' : 'Open primary navigation');
+                }
+
+                function setActive(panelKey) {
+                    panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+                    const next = panelByKey.get(panelKey) || panelByKey.get('root');
+                    if (next) next.classList.add('ff-nav-mobile__panel--active');
+                    syncChromeAndTop();
+                }
+
+                function openMenu() {
+                    if (!mqMobile.matches) return;
+                    lastFocus = document.activeElement;
+                    isOpen = true;
+                    stack = ['root'];
+                    mobileRoot.classList.add('ff-nav-mobile--open');
+                    document.body.classList.add('ff-nav-mobile-open');
+                    setActive('root');
+                    setAria();
+                    requestAnimationFrame(() => {
+                        const active = panelByKey.get('root');
+                        const focusable = active && active.querySelector('a, button, [tabindex]:not([tabindex="-1"])');
+                        if (focusable) focusable.focus();
+                    });
+                }
+
+                function closeMenu() {
+                    isOpen = false;
+                    mobileRoot.classList.remove('ff-nav-mobile--open');
+                    mobileRoot.classList.remove('ff-nav-mobile--chrome-on');
+                    mobileRoot.style.setProperty('--ff-nav-mobile-top', '0px');
+                    document.body.classList.remove('ff-nav-mobile-open');
+                    panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+                    setAria();
+                    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+                }
+
+                function goTo(panelKey) {
+                    if (!mqMobile.matches) return;
+                    if (!panelByKey.has(panelKey)) return;
+                    stack.push(panelKey);
+                    setActive(panelKey);
+                }
+
+                function goBack(explicitKey) {
+                    if (!mqMobile.matches) return;
+                    if (explicitKey && panelByKey.has(explicitKey)) {
+                        const idx = stack.lastIndexOf(explicitKey);
+                        stack = idx >= 0 ? stack.slice(0, idx + 1) : [explicitKey];
+                        setActive(currentKey());
+                        return;
+                    }
+                    if (stack.length > 1) stack.pop();
+                    setActive(currentKey());
+                }
+
+                closeMenu();
+                toggleBtn.addEventListener('click', (e) => {
+                    if (!mqMobile.matches) return;
+                    e.preventDefault();
+                    isOpen ? closeMenu() : openMenu();
+                });
+
+                mobileRoot.addEventListener('click', (e) => {
+                    if (!mqMobile.matches) return;
+                    if (!isOpen) return;
+                    if (e.target === mobileRoot) closeMenu();
+                });
+
+                mobileRoot.addEventListener('click', (e) => {
+                    if (!mqMobile.matches) return;
+                    if (!isOpen) return;
+                    const link = e.target.closest('a');
+                    if (!link) return;
+                    if (link.hasAttribute('data-mobile-chrome-close')) {
+                        e.preventDefault();
+                        closeMenu();
+                        return;
+                    }
+                    if (link.hasAttribute('data-mobile-chrome-back')) {
+                        e.preventDefault();
+                        goBack();
+                        return;
+                    }
+                    const to = link.getAttribute('data-mobile-target');
+                    if (to) {
+                        e.preventDefault();
+                        goTo(to);
+                        return;
+                    }
+                    const back = link.getAttribute('data-mobile-back');
+                    if (back) {
+                        e.preventDefault();
+                        goBack(back);
+                        return;
+                    }
+                    const href = link.getAttribute('href') || '';
+                    const isHashOnly = href === '#' || href.startsWith('#');
+                    if (isHashOnly) e.preventDefault();
+                    else closeMenu();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (!mqMobile.matches) return;
+                    if (!isOpen) return;
+                    if (e.key === 'Escape') closeMenu();
+                });
+
+                window.addEventListener('resize', () => {
+                    if (!mqMobile.matches) return;
+                    if (!isOpen) return;
+                    syncChromeAndTop();
+                });
+
+                mqMobile.addEventListener('change', (e) => {
+                    if (!e.matches && isOpen) closeMenu();
+                });
+
+                setAria();
+            })();
+        });
+    </script>
+</body>
+</html>

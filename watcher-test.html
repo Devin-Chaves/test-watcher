@@ -203,7 +203,7 @@
             const mqMobile = window.matchMedia('(max-width: 991px)');
 
             /* ========================= DESKTOP MEGA (UNCHANGED) ========================= */
-            (function initDesktopMega(){
+            function initDesktopMega(retryCount = 0){
                 const shell = document.querySelector('.ff-nav-container');
                 if (!shell) {
                     console.log('[Nav Debug] No .ff-nav-container found');
@@ -232,6 +232,13 @@
                     || shell;
 
                 const mega = document.getElementById('ff-mega');
+
+                // Check if Webflow has finished loading the nav content
+                if (!mega && retryCount < 10) {
+                    console.log('[Nav Debug] Waiting for Webflow to load nav... retry', retryCount + 1);
+                    setTimeout(() => initDesktopMega(retryCount + 1), 100);
+                    return;
+                }
 
                 console.log('[Nav Debug] Elements found:', {
                     shell: !!shell,
@@ -410,7 +417,10 @@
 
                 if (mqDesktop.matches) attachDesktopHandlers();
                 mqDesktop.addEventListener('change', (e) => e.matches ? attachDesktopHandlers() : teardownDesktop());
-            })();
+            }
+
+            // Initialize desktop mega nav (with retry for async-loaded content)
+            initDesktopMega();
 
             /* ========================= MOBILE NAV (STACK + FADE) + CHROME (LAYER 2+ ONLY) ========================= */
             (function initMobileNav(){

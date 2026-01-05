@@ -11,8 +11,13 @@
         }
 
         .ff-nav-container.ff-nav-container--animated {
-            transition: height 220ms ease-out !important;
+            overflow: hidden;
+            transition: height 220ms ease-out;
             will-change: height;
+        }
+
+        .ff-nav-container.ff-nav-container--open {
+            overflow: visible;
         }
 
         .ff-nav-container.ff-nav-container--open::after {

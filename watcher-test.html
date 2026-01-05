@@ -220,9 +220,11 @@
 
                 const triggers = document.querySelectorAll('.ff-nav__links [data-menu-trigger]');
 
-                console.log('[MEGA]', { panels: panels.size, triggers: triggers.length });
+                console.log('[MEGA] counts:', { panels: panels.size, triggers: triggers.length, ctas: ctas.size });
 
                 if (!panels.size || !triggers.length) return;
+
+                console.log('[MEGA] initializing handlers...');
 
                 const EXTRA_PAD = 24;
                 const CLOSE_DELAY = 150;
@@ -240,10 +242,11 @@
                 }
 
                 function setHeight(key) {
+                    const navH = navBar.offsetHeight || 0;
                     const panelH = key ? getHeight(panels.get(key)) : 0;
                     const ctaH = key ? getHeight(ctas.get(key)) : 0;
                     const extra = key ? EXTRA_PAD : 0;
-                    shell.style.height = (navBar.offsetHeight + panelH + ctaH + extra) + 'px';
+                    shell.style.height = (navH + panelH + ctaH + extra) + 'px';
                 }
 
                 function open(key) {

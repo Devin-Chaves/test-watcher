@@ -39,6 +39,76 @@
             display: flex;
         }
 
+        /* ========================= MENU ITEM STYLES ========================= */
+        /* Menu Item Container */
+        .ff-menu-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 0;
+        }
+
+        .ff-menu-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Icon/Image Container */
+        .ff-menu-item__icon {
+            width: 56px;
+            height: 56px;
+            min-width: 56px;
+            min-height: 56px;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .ff-menu-item__icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Menu Section Container */
+        .ff-menu-section {
+            padding-left: 40px;
+            padding-right: 24px;
+        }
+
+        .ff-menu-section__heading {
+            margin-bottom: 24px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Content alignment */
+        .ff-menu-item__content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .ff-menu-item__title {
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.3;
+        }
+
+        .ff-menu-item__description {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.4;
+        }
+
         /* ========================= MOBILE NAV (OUTSIDE SHELL) + CHROME BEHAVIOR ========================= */
         @media (min-width: 992px) {
             [data-nav-mobile] {

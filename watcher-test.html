@@ -209,6 +209,9 @@
                 const region = shell && shell.querySelector('.ff-nav-region');
                 const navBar = region && region.querySelector('.ff-nav__bar');
                 const mega = document.getElementById('ff-mega');
+
+                console.log('[NAV INIT]', { shell: !!shell, region: !!region, navBar: !!navBar, mega: !!mega });
+
                 if (!shell || !region || !navBar || !mega) return;
 
                 const panels = Array.from(mega.querySelectorAll('[data-menu-panel]'));

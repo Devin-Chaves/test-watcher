@@ -285,6 +285,18 @@
                     const { pad, bor, boxSizing } = shellExtraBox();
                     const outerH = contentH + pad + bor;
                     const target = (boxSizing === 'border-box') ? outerH : contentH;
+
+                    // Get current height before setting new one
+                    const currentHeight = shell.getBoundingClientRect().height;
+                    console.log('[Nav Debug] Height change:', currentHeight, '->', target);
+
+                    // If no current inline height, set it first so transition has a starting point
+                    if (!shell.style.height) {
+                        shell.style.height = currentHeight + 'px';
+                        // Force reflow before changing height
+                        shell.offsetHeight;
+                    }
+
                     shell.style.height = target + 'px';
                 }
 

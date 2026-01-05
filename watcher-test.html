@@ -5,21 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigation</title>
     <style>
-        /* ========================= DESKTOP MEGA ========================= */
+        /* ========================= DESKTOP MEGA (AS-IS) ========================= */
         .ff-nav-container {
             --ff-nav-backdrop-pad: 24px;
-            position: relative;
-            z-index: 1000;
         }
 
         .ff-nav-container.ff-nav-container--animated {
+            overflow: hidden;
             transition: height 220ms ease-out;
             will-change: height;
-        }
-
-        .ff-nav-container.ff-nav-container--open {
-            z-index: 1001;
-            overflow: visible !important;
         }
 
         .ff-nav-container.ff-nav-container--open::after {
@@ -28,25 +22,15 @@
             height: var(--ff-nav-backdrop-pad);
         }
 
-        /* Mega menu container */
-        #ff-mega {
-            position: relative;
-            z-index: 100;
-        }
-
         #ff-mega .ff-mega__panel {
             display: none;
             opacity: 0;
             transition: opacity 180ms ease-out;
-            position: relative;
-            z-index: 101;
         }
 
         #ff-mega .ff-mega__panel.ff-mega__panel--active {
-            display: block !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            pointer-events: auto !important;
+            display: block;
+            opacity: 1;
         }
 
         #ff-mega .ff-mega__cta {
@@ -54,15 +38,7 @@
         }
 
         #ff-mega .ff-mega__cta.ff-mega__cta--active {
-            display: flex !important;
-            visibility: visible !important;
-        }
-
-        /* Ensure dropdown triggers are clickable/hoverable */
-        [data-menu-trigger] {
-            cursor: pointer;
-            position: relative;
-            z-index: 10;
+            display: flex;
         }
 
         /* ========================= MOBILE NAV (OUTSIDE SHELL) + CHROME BEHAVIOR ========================= */
@@ -223,93 +199,24 @@
 </head>
 <body>
     <script>
-        (function() {
-            'use strict';
-
-            const DEBUG = true; // Set to false in production
-            function log(...args) {
-                if (DEBUG) console.log('[FF-Nav]', ...args);
-            }
-
+        document.addEventListener('DOMContentLoaded', function () {
             const mqDesktop = window.matchMedia('(min-width: 992px)');
             const mqMobile = window.matchMedia('(max-width: 991px)');
 
-            // ========================= INITIALIZATION WITH RETRY =========================
-            // Handles race condition when HTML is loaded from external source (Webflow)
-            let initAttempts = 0;
-            const MAX_ATTEMPTS = 50; // 5 seconds max wait
-            const RETRY_INTERVAL = 100; // Check every 100ms
-
-            function tryInit() {
-                initAttempts++;
-                log(`Init attempt ${initAttempts}/${MAX_ATTEMPTS}`);
-
+            /* ========================= DESKTOP MEGA (UNCHANGED) ========================= */
+            (function initDesktopMega(){
                 const shell = document.querySelector('.ff-nav-container');
+                const region = shell && shell.querySelector('.ff-nav-region');
+                const navBar = region && region.querySelector('.ff-nav__bar');
                 const mega = document.getElementById('ff-mega');
-                const mobileRoot = document.querySelector('[data-nav-mobile]');
-                const toggleBtn = document.querySelector('[data-nav-toggle]');
-
-                // Check if critical elements exist
-                const desktopReady = shell && mega;
-                const mobileReady = mobileRoot && toggleBtn;
-
-                if (desktopReady || mobileReady) {
-                    log('Elements found, initializing...', {
-                        shell: !!shell,
-                        mega: !!mega,
-                        mobileRoot: !!mobileRoot,
-                        toggleBtn: !!toggleBtn
-                    });
-
-                    if (desktopReady) initDesktopMega();
-                    if (mobileReady) initMobileNav();
-                    return true;
-                }
-
-                if (initAttempts < MAX_ATTEMPTS) {
-                    setTimeout(tryInit, RETRY_INTERVAL);
-                    return false;
-                }
-
-                log('Max attempts reached. Elements not found:', {
-                    shell: !!shell,
-                    mega: !!mega,
-                    mobileRoot: !!mobileRoot,
-                    toggleBtn: !!toggleBtn
-                });
-                return false;
-            }
-
-            /* ========================= DESKTOP MEGA ========================= */
-            function initDesktopMega(){
-                const shell = document.querySelector('.ff-nav-container');
-                // Try multiple possible selectors for Webflow compatibility
-                const region = shell.querySelector('.ff-nav-region') || shell.querySelector('.ff-nav__region') || shell;
-                const navBar = region.querySelector('.ff-nav__bar') || region.querySelector('.ff-nav-bar') || region.querySelector('nav') || region;
-                const mega = document.getElementById('ff-mega');
-
-                if (!shell || !mega) {
-                    log('Desktop init failed - missing shell or mega');
-                    return;
-                }
-
-                log('Desktop mega init starting', { shell, region, navBar, mega });
+                if (!shell || !region || !navBar || !mega) return;
 
                 const panels = Array.from(mega.querySelectorAll('[data-menu-panel]'));
-                // Try multiple trigger selectors
-                let triggers = Array.from(document.querySelectorAll('.ff-nav__links [data-menu-trigger]'));
-                if (!triggers.length) {
-                    triggers = Array.from(document.querySelectorAll('[data-menu-trigger]'));
-                }
+                const triggers = Array.from(document.querySelectorAll('.ff-nav__links [data-menu-trigger]'));
                 const ctaSlot = mega.querySelector('.ff-mega__cta-slot');
                 const ctas = ctaSlot ? Array.from(ctaSlot.querySelectorAll('[data-menu-cta]')) : [];
 
-                log('Found elements:', { panels: panels.length, triggers: triggers.length, ctas: ctas.length });
-
-                if (!panels.length || !triggers.length) {
-                    log('Desktop init failed - no panels or triggers found');
-                    return;
-                }
+                if (!panels.length || !triggers.length) return;
 
                 let activeKey = null;
                 let isOpen = false;
@@ -391,25 +298,12 @@
 
                 function openMenu(key) {
                     if (!key) return;
-
-                    // If already open with same key, do nothing
-                    if (isOpen && activeKey === key) return;
-
-                    const wasOpen = isOpen;
                     isOpen = true;
                     activeKey = key;
-
-                    // Add classes only if not already open
-                    if (!wasOpen) {
-                        shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
-                    }
-
-                    // Sync panels and CTAs
+                    shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
                     syncPanels(key);
                     syncCtas(key);
-
-                    // Set height - no requestAnimationFrame needed, just do it
-                    setShellHeightForKey(key);
+                    requestAnimationFrame(() => setShellHeightForKey(key));
                 }
 
                 function closeMenu() {
@@ -442,12 +336,6 @@
                         });
                     });
 
-                    // Keep menu open when hovering over mega panel area
-                    mega.addEventListener('mouseenter', () => {
-                        if (!mqDesktop.matches) return;
-                        clearTimeout(hoverTimeout);
-                    });
-
                     shell.addEventListener('mouseleave', () => {
                         if (!mqDesktop.matches) return;
                         clearTimeout(hoverTimeout);
@@ -474,18 +362,13 @@
 
                 if (mqDesktop.matches) attachDesktopHandlers();
                 mqDesktop.addEventListener('change', (e) => e.matches ? attachDesktopHandlers() : teardownDesktop());
-
-                log('Desktop mega menu initialized successfully');
-            }
+            })();
 
             /* ========================= MOBILE NAV (STACK + FADE) + CHROME (LAYER 2+ ONLY) ========================= */
-            function initMobileNav(){
+            (function initMobileNav(){
                 const mobileRoot = document.querySelector('[data-nav-mobile]');
                 const toggleBtn = document.querySelector('[data-nav-toggle]');
-                if (!mobileRoot || !toggleBtn) {
-                    log('Mobile nav init skipped - missing mobileRoot or toggleBtn');
-                    return;
-                }
+                if (!mobileRoot || !toggleBtn) return;
 
                 const panels = Array.from(mobileRoot.querySelectorAll('[data-mobile-panel]'));
                 if (!panels.length) return;
@@ -657,17 +540,8 @@
                 });
 
                 setAria();
-                log('Mobile nav initialized successfully');
-            }
-
-            // ========================= START INITIALIZATION =========================
-            // Start trying to init when DOM is ready, with retry for async-loaded content
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', tryInit);
-            } else {
-                tryInit();
-            }
-        })();
+            })();
+        });
     </script>
 </body>
 </html>

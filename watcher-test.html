@@ -20,26 +20,6 @@
             will-change: height;
         }
 
-        /* Hover bridge - invisible triangle that prevents flicker when moving to dropdown */
-        .ff-nav-trigger-bridge {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .ff-nav-trigger-bridge--active {
-            pointer-events: auto;
-            width: 250px;
-            height: 40px;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            background: transparent;
-        }
-
         #ff-mega .ff-mega__panel {
             display: none;
             opacity: 0;
@@ -242,11 +222,6 @@
                 let isOpen = false;
                 let hoverTimeout = null;
                 let desktopInitialized = false;
-                let activeTrigger = null;
-
-                // Create the hover bridge element (reused across triggers)
-                const bridge = document.createElement('div');
-                bridge.className = 'ff-nav-trigger-bridge';
 
                 function px(n){ return Number.isFinite(n) ? n : 0; }
 
@@ -321,33 +296,13 @@
                     setShellHeightFromContent(contentH);
                 }
 
-                function showBridge(trigger) {
-                    if (!trigger) return;
-                    // Ensure trigger has position relative for absolute bridge
-                    const cs = getComputedStyle(trigger);
-                    if (cs.position === 'static') {
-                        trigger.style.position = 'relative';
-                    }
-                    trigger.appendChild(bridge);
-                    bridge.classList.add('ff-nav-trigger-bridge--active');
-                }
-
-                function hideBridge() {
-                    bridge.classList.remove('ff-nav-trigger-bridge--active');
-                    if (bridge.parentNode) {
-                        bridge.parentNode.removeChild(bridge);
-                    }
-                }
-
-                function openMenu(key, trigger) {
+                function openMenu(key) {
                     if (!key) return;
                     isOpen = true;
                     activeKey = key;
-                    activeTrigger = trigger || null;
                     shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
                     syncPanels(key);
                     syncCtas(key);
-                    if (trigger) showBridge(trigger);
                     requestAnimationFrame(() => setShellHeightForKey(key));
                 }
 
@@ -355,8 +310,6 @@
                     if (!isOpen) return;
                     isOpen = false;
                     activeKey = null;
-                    activeTrigger = null;
-                    hideBridge();
                     shell.classList.remove('ff-nav-container--open');
                     setShellHeightFromContent(baseNavHeight());
                     panels.forEach(p => p.classList.remove('ff-mega__panel--active'));
@@ -379,32 +332,14 @@
                         trigger.addEventListener('mouseenter', () => {
                             if (!mqDesktop.matches) return;
                             clearTimeout(hoverTimeout);
-                            openMenu(key, trigger);
+                            openMenu(key);
                         });
-                    });
-
-                    // Bridge hover handlers - keep menu open while in bridge zone
-                    bridge.addEventListener('mouseenter', () => {
-                        if (!mqDesktop.matches) return;
-                        clearTimeout(hoverTimeout);
-                    });
-
-                    bridge.addEventListener('mouseleave', () => {
-                        if (!mqDesktop.matches) return;
-                        clearTimeout(hoverTimeout);
-                        hoverTimeout = setTimeout(closeMenu, 150);
                     });
 
                     shell.addEventListener('mouseleave', () => {
                         if (!mqDesktop.matches) return;
                         clearTimeout(hoverTimeout);
                         hoverTimeout = setTimeout(closeMenu, 150);
-                    });
-
-                    // Keep menu open when entering the shell (dropdown area)
-                    shell.addEventListener('mouseenter', () => {
-                        if (!mqDesktop.matches) return;
-                        clearTimeout(hoverTimeout);
                     });
 
                     window.addEventListener('resize', () => {
@@ -418,8 +353,6 @@
                     desktopInitialized = false;
                     isOpen = false;
                     activeKey = null;
-                    activeTrigger = null;
-                    hideBridge();
                     clearTimeout(hoverTimeout);
                     shell.classList.remove('ff-nav-container--animated', 'ff-nav-container--open');
                     shell.style.removeProperty('height');

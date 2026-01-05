@@ -205,19 +205,46 @@
             /* ========================= DESKTOP MEGA (UNCHANGED) ========================= */
             (function initDesktopMega(){
                 const shell = document.querySelector('.ff-nav-container');
-                const region = shell && shell.querySelector('.ff-nav-region');
-                const navBar = region && region.querySelector('.ff-nav__bar');
+                if (!shell) {
+                    console.log('[Nav Debug] No .ff-nav-container found');
+                    return;
+                }
+
+                // Try multiple possible selectors for region and navBar
+                // Webflow may use different class naming conventions
+                const region = shell.querySelector('.ff-nav-region')
+                    || shell.querySelector('.ff-nav__region')
+                    || shell.querySelector('[class*="nav-region"]')
+                    || shell.querySelector('[class*="nav_region"]')
+                    || shell;
+
+                // Look for the navbar - this is the element whose height we need as the "base"
+                // It's typically the first visible row containing navigation links
+                const navBar = shell.querySelector('.ff-nav__bar')
+                    || shell.querySelector('.ff-nav-bar')
+                    || shell.querySelector('[class*="nav__bar"]')
+                    || shell.querySelector('[class*="nav-bar"]')
+                    || shell.querySelector('[class*="nav_bar"]')
+                    || shell.querySelector('nav')
+                    || shell.querySelector('.ff-nav__links')?.parentElement
+                    || shell.querySelector('[class*="nav-links"]')?.parentElement
+                    || shell.firstElementChild
+                    || shell;
+
                 const mega = document.getElementById('ff-mega');
 
                 console.log('[Nav Debug] Elements found:', {
                     shell: !!shell,
                     region: !!region,
                     navBar: !!navBar,
-                    mega: !!mega
+                    mega: !!mega,
+                    shellClass: shell?.className,
+                    regionClass: region?.className,
+                    navBarClass: navBar?.className
                 });
 
-                if (!shell || !region || !navBar || !mega) {
-                    console.log('[Nav Debug] Missing required elements, exiting');
+                if (!mega) {
+                    console.log('[Nav Debug] No #ff-mega found, exiting');
                     return;
                 }
 

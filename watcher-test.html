@@ -374,6 +374,21 @@
                 function attachDesktopHandlers() {
                     if (desktopInitialized) return;
                     desktopInitialized = true;
+
+                    // Debug: Check what's blocking the transition
+                    const computedStyle = getComputedStyle(shell);
+                    console.log('[Nav Debug] Shell computed styles:', {
+                        transition: computedStyle.transition,
+                        height: computedStyle.height,
+                        maxHeight: computedStyle.maxHeight,
+                        overflow: computedStyle.overflow,
+                        display: computedStyle.display,
+                        position: computedStyle.position
+                    });
+
+                    // Force remove any transition-blocking styles
+                    shell.style.transition = 'height 220ms ease-out';
+
                     shell.classList.add('ff-nav-container--animated');
                     shell.classList.remove('ff-nav-container--open');
                     setShellHeightFromContent(baseNavHeight());

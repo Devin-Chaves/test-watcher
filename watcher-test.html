@@ -39,76 +39,6 @@
             display: flex;
         }
 
-        /* ========================= MENU ITEM STYLES ========================= */
-        /* Menu Item Container */
-        .ff-menu-item {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-            margin-bottom: 30px;
-            padding: 0;
-        }
-
-        .ff-menu-item:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Icon/Image Container */
-        .ff-menu-item__icon {
-            width: 56px;
-            height: 56px;
-            min-width: 56px;
-            min-height: 56px;
-            border-radius: 8px;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .ff-menu-item__icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Menu Section Container */
-        .ff-menu-section {
-            padding-left: 40px;
-            padding-right: 24px;
-        }
-
-        .ff-menu-section__heading {
-            margin-bottom: 24px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Content alignment */
-        .ff-menu-item__content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .ff-menu-item__title {
-            font-weight: 600;
-            font-size: 16px;
-            line-height: 1.3;
-        }
-
-        .ff-menu-item__description {
-            font-size: 14px;
-            color: #888;
-            line-height: 1.4;
-        }
-
         /* ========================= MOBILE NAV (OUTSIDE SHELL) + CHROME BEHAVIOR ========================= */
         @media (min-width: 992px) {
             [data-nav-mobile] {
@@ -271,167 +201,81 @@
             const mqDesktop = window.matchMedia('(min-width: 992px)');
             const mqMobile = window.matchMedia('(max-width: 991px)');
 
-            /* ========================= DESKTOP MEGA (UNCHANGED) ========================= */
-            (function initDesktopMega(){
+            /* ========================= DESKTOP MEGA ========================= */
+            (function initDesktopMega() {
                 const shell = document.querySelector('.ff-nav-container');
-                const navBar = shell && shell.querySelector('.ff-nav__bar');
+                const navBar = shell?.querySelector('.ff-nav__bar');
                 const mega = document.getElementById('ff-mega');
-
-                console.log('[NAV INIT]', { shell: !!shell, navBar: !!navBar, mega: !!mega });
-
                 if (!shell || !navBar || !mega) return;
 
-                const panels = Array.from(mega.querySelectorAll('[data-menu-panel]'));
-                const triggers = Array.from(document.querySelectorAll('.ff-nav__links [data-menu-trigger]'));
-                const ctaSlot = mega.querySelector('.ff-mega__cta-slot');
-                const ctas = ctaSlot ? Array.from(ctaSlot.querySelectorAll('[data-menu-cta]')) : [];
+                // Build lookup maps once
+                const panels = new Map();
+                mega.querySelectorAll('[data-menu-panel]').forEach(p => panels.set(p.dataset.menuPanel, p));
 
-                if (!panels.length || !triggers.length) return;
+                const ctas = new Map();
+                mega.querySelectorAll('[data-menu-cta]').forEach(c => ctas.set(c.dataset.menuCta, c));
+
+                const triggers = document.querySelectorAll('.ff-nav__links [data-menu-trigger]');
+                if (!panels.size || !triggers.length) return;
+
+                const EXTRA_PAD = 24;
+                const CLOSE_DELAY = 150;
 
                 let activeKey = null;
-                let isOpen = false;
-                let hoverTimeout = null;
-                let desktopInitialized = false;
+                let closeTimer = null;
 
-                function px(n){ return Number.isFinite(n) ? n : 0; }
-
-                function shellExtraBox() {
-                    const cs = getComputedStyle(shell);
-                    const pad = px(parseFloat(cs.paddingTop)) + px(parseFloat(cs.paddingBottom));
-                    const bor = px(parseFloat(cs.borderTopWidth)) + px(parseFloat(cs.borderBottomWidth));
-                    return { pad, bor, boxSizing: cs.boxSizing };
-                }
-
-                function setShellHeightFromContent(contentH) {
-                    const { pad, bor, boxSizing } = shellExtraBox();
-                    const outerH = contentH + pad + bor;
-                    const target = (boxSizing === 'border-box') ? outerH : contentH;
-                    shell.style.height = target + 'px';
-                }
-
-                function baseNavHeight() {
-                    return navBar.offsetHeight || 0;
-                }
-
-                function measureElement(el) {
+                function getHeight(el) {
                     if (!el) return 0;
-                    const cs = getComputedStyle(el);
-                    const wasHidden = cs.display === 'none';
-                    const prev = { display: el.style.display, position: el.style.position, visibility: el.style.visibility, pointerEvents: el.style.pointerEvents };
-                    if (wasHidden) {
-                        el.style.display = 'block';
-                        el.style.position = 'absolute';
-                        el.style.visibility = 'hidden';
-                        el.style.pointerEvents = 'none';
-                    }
-                    const h = el.offsetHeight || 0;
-                    if (wasHidden) {
-                        el.style.display = prev.display;
-                        el.style.position = prev.position;
-                        el.style.visibility = prev.visibility;
-                        el.style.pointerEvents = prev.pointerEvents;
-                    }
+                    const wasHidden = getComputedStyle(el).display === 'none';
+                    if (wasHidden) el.style.display = 'block';
+                    const h = el.offsetHeight;
+                    if (wasHidden) el.style.display = '';
                     return h;
                 }
 
-                function panelForKey(key){
-                    return panels.find(p => p.dataset.menuPanel === key) || null;
+                function setHeight(key) {
+                    const panelH = key ? getHeight(panels.get(key)) : 0;
+                    const ctaH = key ? getHeight(ctas.get(key)) : 0;
+                    const extra = key ? EXTRA_PAD : 0;
+                    shell.style.height = (navBar.offsetHeight + panelH + ctaH + extra) + 'px';
                 }
 
-                function ctaForKey(key){
-                    return ctas.find(c => c.dataset.menuCta === key) || null;
-                }
-
-                function openExtra() {
-                    const cs = getComputedStyle(shell);
-                    return px(parseFloat(cs.getPropertyValue('--ff-nav-backdrop-pad'))) || 0;
-                }
-
-                function syncPanels(key) {
-                    panels.forEach(panel => panel.classList.toggle('ff-mega__panel--active', panel.dataset.menuPanel === key));
-                }
-
-                function syncCtas(key) {
-                    if (!ctas.length) return;
-                    ctas.forEach(cta => cta.classList.toggle('ff-mega__cta--active', cta.dataset.menuCta === key));
-                }
-
-                function setShellHeightForKey(key) {
-                    const navH = baseNavHeight();
-                    const panel = key ? panelForKey(key) : null;
-                    const cta = key ? ctaForKey(key) : null;
-                    const panelH = panel ? measureElement(panel) : 0;
-                    const ctaH = cta ? measureElement(cta) : 0;
-                    const contentH = navH + panelH + ctaH + (isOpen ? openExtra() : 0);
-                    setShellHeightFromContent(contentH);
-                }
-
-                function openMenu(key) {
-                    if (!key) return;
-                    isOpen = true;
+                function open(key) {
+                    if (activeKey === key) return;
                     activeKey = key;
-                    shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
-                    syncPanels(key);
-                    syncCtas(key);
-                    requestAnimationFrame(() => setShellHeightForKey(key));
+                    panels.forEach((p, k) => p.classList.toggle('ff-mega__panel--active', k === key));
+                    ctas.forEach((c, k) => c.classList.toggle('ff-mega__cta--active', k === key));
+                    shell.classList.add('ff-nav-container--open');
+                    setHeight(key);
                 }
 
-                function closeMenu() {
-                    if (!isOpen) return;
-                    isOpen = false;
+                function close() {
+                    if (!activeKey) return;
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
-                    setShellHeightFromContent(baseNavHeight());
                     panels.forEach(p => p.classList.remove('ff-mega__panel--active'));
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
+                    setHeight(null);
                 }
 
-                function attachDesktopHandlers() {
-                    if (desktopInitialized) return;
-                    desktopInitialized = true;
-                    shell.classList.add('ff-nav-container--animated');
-                    shell.classList.remove('ff-nav-container--open');
-                    setShellHeightFromContent(baseNavHeight());
+                // Initialize
+                shell.classList.add('ff-nav-container--animated');
+                setHeight(null);
 
-                    triggers.forEach(trigger => {
-                        const key = trigger.dataset.menuTrigger;
-                        if (!key) return;
-                        trigger.addEventListener('click', (e) => {
-                            if (mqDesktop.matches) e.preventDefault();
-                        });
-                        trigger.addEventListener('mouseenter', () => {
-                            if (!mqDesktop.matches) return;
-                            clearTimeout(hoverTimeout);
-                            openMenu(key);
-                        });
+                // Event handlers
+                triggers.forEach(t => {
+                    t.addEventListener('mouseenter', () => {
+                        clearTimeout(closeTimer);
+                        open(t.dataset.menuTrigger);
                     });
+                });
 
-                    shell.addEventListener('mouseleave', () => {
-                        if (!mqDesktop.matches) return;
-                        clearTimeout(hoverTimeout);
-                        hoverTimeout = setTimeout(closeMenu, 150);
-                    });
+                shell.addEventListener('mouseleave', () => {
+                    clearTimeout(closeTimer);
+                    closeTimer = setTimeout(close, CLOSE_DELAY);
+                });
 
-                    window.addEventListener('resize', () => {
-                        if (!mqDesktop.matches) return;
-                        if (!isOpen) setShellHeightFromContent(baseNavHeight());
-                        else if (activeKey) setShellHeightForKey(activeKey);
-                    });
-                }
-
-                function teardownDesktop() {
-                    desktopInitialized = false;
-                    isOpen = false;
-                    activeKey = null;
-                    clearTimeout(hoverTimeout);
-                    shell.classList.remove('ff-nav-container--animated', 'ff-nav-container--open');
-                    shell.style.removeProperty('height');
-                    panels.forEach(p => p.classList.remove('ff-mega__panel--active'));
-                    ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
-                }
-
-                if (mqDesktop.matches) attachDesktopHandlers();
-                mqDesktop.addEventListener('change', (e) => e.matches ? attachDesktopHandlers() : teardownDesktop());
+                shell.addEventListener('mouseenter', () => clearTimeout(closeTimer));
             })();
 
             /* ========================= MOBILE NAV (STACK + FADE) + CHROME (LAYER 2+ ONLY) ========================= */

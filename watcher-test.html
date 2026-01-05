@@ -391,12 +391,25 @@
 
                 function openMenu(key) {
                     if (!key) return;
+
+                    // If already open with same key, do nothing
+                    if (isOpen && activeKey === key) return;
+
+                    const wasOpen = isOpen;
                     isOpen = true;
                     activeKey = key;
-                    shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
+
+                    // Add classes only if not already open
+                    if (!wasOpen) {
+                        shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
+                    }
+
+                    // Sync panels and CTAs
                     syncPanels(key);
                     syncCtas(key);
-                    requestAnimationFrame(() => setShellHeightForKey(key));
+
+                    // Set height - no requestAnimationFrame needed, just do it
+                    setShellHeightForKey(key);
                 }
 
                 function closeMenu() {
@@ -427,6 +440,12 @@
                             clearTimeout(hoverTimeout);
                             openMenu(key);
                         });
+                    });
+
+                    // Keep menu open when hovering over mega panel area
+                    mega.addEventListener('mouseenter', () => {
+                        if (!mqDesktop.matches) return;
+                        clearTimeout(hoverTimeout);
                     });
 
                     shell.addEventListener('mouseleave', () => {

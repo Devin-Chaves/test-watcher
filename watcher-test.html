@@ -206,6 +206,9 @@
                 const shell = document.querySelector('.ff-nav-container');
                 const navBar = shell?.querySelector('.ff-nav__bar');
                 const mega = document.getElementById('ff-mega');
+
+                console.log('[MEGA]', { shell: !!shell, navBar: !!navBar, mega: !!mega });
+
                 if (!shell || !navBar || !mega) return;
 
                 // Build lookup maps once
@@ -216,6 +219,9 @@
                 mega.querySelectorAll('[data-menu-cta]').forEach(c => ctas.set(c.dataset.menuCta, c));
 
                 const triggers = document.querySelectorAll('.ff-nav__links [data-menu-trigger]');
+
+                console.log('[MEGA]', { panels: panels.size, triggers: triggers.length });
+
                 if (!panels.size || !triggers.length) return;
 
                 const EXTRA_PAD = 24;

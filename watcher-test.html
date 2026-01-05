@@ -12,13 +12,19 @@
 
         .ff-nav-container.ff-nav-container--animated {
             overflow: hidden;
+            border-radius: inherit;
             transition: height 220ms ease-out;
             will-change: height;
         }
 
-        .ff-nav-container.ff-nav-container--open::after {
+        .ff-nav-container.ff-nav-container--animated::after {
             content: "";
             display: block;
+            height: 0;
+            transition: height 220ms ease-out;
+        }
+
+        .ff-nav-container.ff-nav-container--open::after {
             height: var(--ff-nav-backdrop-pad);
         }
 

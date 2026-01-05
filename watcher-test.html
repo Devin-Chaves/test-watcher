@@ -16,10 +16,6 @@
             will-change: height;
         }
 
-        .ff-nav-container.ff-nav-container--open {
-            overflow: visible;
-        }
-
         .ff-nav-container.ff-nav-container--open::after {
             content: "";
             display: block;
@@ -208,69 +204,19 @@
             const mqMobile = window.matchMedia('(max-width: 991px)');
 
             /* ========================= DESKTOP MEGA (UNCHANGED) ========================= */
-            function initDesktopMega(retryCount = 0){
+            (function initDesktopMega(){
                 const shell = document.querySelector('.ff-nav-container');
-                if (!shell) {
-                    console.log('[Nav Debug] No .ff-nav-container found');
-                    return;
-                }
-
-                // Try multiple possible selectors for region and navBar
-                // Webflow may use different class naming conventions
-                const region = shell.querySelector('.ff-nav-region')
-                    || shell.querySelector('.ff-nav__region')
-                    || shell.querySelector('[class*="nav-region"]')
-                    || shell.querySelector('[class*="nav_region"]')
-                    || shell;
-
-                // Look for the navbar - this is the element whose height we need as the "base"
-                // It's typically the first visible row containing navigation links
-                const navBar = shell.querySelector('.ff-nav__bar')
-                    || shell.querySelector('.ff-nav-bar')
-                    || shell.querySelector('[class*="nav__bar"]')
-                    || shell.querySelector('[class*="nav-bar"]')
-                    || shell.querySelector('[class*="nav_bar"]')
-                    || shell.querySelector('nav')
-                    || shell.querySelector('.ff-nav__links')?.parentElement
-                    || shell.querySelector('[class*="nav-links"]')?.parentElement
-                    || shell.firstElementChild
-                    || shell;
-
+                const region = shell && shell.querySelector('.ff-nav-region');
+                const navBar = region && region.querySelector('.ff-nav__bar');
                 const mega = document.getElementById('ff-mega');
-
-                // Check if Webflow has finished loading the nav content
-                if (!mega && retryCount < 10) {
-                    console.log('[Nav Debug] Waiting for Webflow to load nav... retry', retryCount + 1);
-                    setTimeout(() => initDesktopMega(retryCount + 1), 100);
-                    return;
-                }
-
-                console.log('[Nav Debug] Elements found:', {
-                    shell: !!shell,
-                    region: !!region,
-                    navBar: !!navBar,
-                    mega: !!mega,
-                    shellClass: shell?.className,
-                    regionClass: region?.className,
-                    navBarClass: navBar?.className
-                });
-
-                if (!mega) {
-                    console.log('[Nav Debug] No #ff-mega found, exiting');
-                    return;
-                }
+                if (!shell || !region || !navBar || !mega) return;
 
                 const panels = Array.from(mega.querySelectorAll('[data-menu-panel]'));
                 const triggers = Array.from(document.querySelectorAll('.ff-nav__links [data-menu-trigger]'));
                 const ctaSlot = mega.querySelector('.ff-mega__cta-slot');
                 const ctas = ctaSlot ? Array.from(ctaSlot.querySelectorAll('[data-menu-cta]')) : [];
 
-                console.log('[Nav Debug] Panels:', panels.length, 'Triggers:', triggers.length, 'CTAs:', ctas.length);
-
-                if (!panels.length || !triggers.length) {
-                    console.log('[Nav Debug] No panels or triggers, exiting');
-                    return;
-                }
+                if (!panels.length || !triggers.length) return;
 
                 let activeKey = null;
                 let isOpen = false;
@@ -290,18 +236,6 @@
                     const { pad, bor, boxSizing } = shellExtraBox();
                     const outerH = contentH + pad + bor;
                     const target = (boxSizing === 'border-box') ? outerH : contentH;
-
-                    // Get current height before setting new one
-                    const currentHeight = shell.getBoundingClientRect().height;
-                    console.log('[Nav Debug] Height change:', currentHeight, '->', target);
-
-                    // If no current inline height, set it first so transition has a starting point
-                    if (!shell.style.height) {
-                        shell.style.height = currentHeight + 'px';
-                        // Force reflow before changing height
-                        shell.offsetHeight;
-                    }
-
                     shell.style.height = target + 'px';
                 }
 
@@ -358,15 +292,12 @@
                     const cta = key ? ctaForKey(key) : null;
                     const panelH = panel ? measureElement(panel) : 0;
                     const ctaH = cta ? measureElement(cta) : 0;
-                    const extra = isOpen ? openExtra() : 0;
-                    const contentH = navH + panelH + ctaH + extra;
-                    console.log('[Nav Debug] setShellHeightForKey:', { key, navH, panelH, ctaH, extra, contentH });
+                    const contentH = navH + panelH + ctaH + (isOpen ? openExtra() : 0);
                     setShellHeightFromContent(contentH);
                 }
 
                 function openMenu(key) {
                     if (!key) return;
-                    console.log('[Nav Debug] openMenu:', key);
                     isOpen = true;
                     activeKey = key;
                     shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
@@ -377,13 +308,10 @@
 
                 function closeMenu() {
                     if (!isOpen) return;
-                    console.log('[Nav Debug] closeMenu');
                     isOpen = false;
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
-                    const navH = baseNavHeight();
-                    console.log('[Nav Debug] closeMenu baseNavHeight:', navH);
-                    setShellHeightFromContent(navH);
+                    setShellHeightFromContent(baseNavHeight());
                     panels.forEach(p => p.classList.remove('ff-mega__panel--active'));
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
                 }
@@ -391,21 +319,6 @@
                 function attachDesktopHandlers() {
                     if (desktopInitialized) return;
                     desktopInitialized = true;
-
-                    // Debug: Check what's blocking the transition
-                    const computedStyle = getComputedStyle(shell);
-                    console.log('[Nav Debug] Shell computed styles:', {
-                        transition: computedStyle.transition,
-                        height: computedStyle.height,
-                        maxHeight: computedStyle.maxHeight,
-                        overflow: computedStyle.overflow,
-                        display: computedStyle.display,
-                        position: computedStyle.position
-                    });
-
-                    // Force remove any transition-blocking styles
-                    shell.style.transition = 'height 220ms ease-out';
-
                     shell.classList.add('ff-nav-container--animated');
                     shell.classList.remove('ff-nav-container--open');
                     setShellHeightFromContent(baseNavHeight());
@@ -449,10 +362,7 @@
 
                 if (mqDesktop.matches) attachDesktopHandlers();
                 mqDesktop.addEventListener('change', (e) => e.matches ? attachDesktopHandlers() : teardownDesktop());
-            }
-
-            // Initialize desktop mega nav (with retry for async-loaded content)
-            initDesktopMega();
+            })();
 
             /* ========================= MOBILE NAV (STACK + FADE) + CHROME (LAYER 2+ ONLY) ========================= */
             (function initMobileNav(){

@@ -208,14 +208,30 @@
                 const region = shell && shell.querySelector('.ff-nav-region');
                 const navBar = region && region.querySelector('.ff-nav__bar');
                 const mega = document.getElementById('ff-mega');
-                if (!shell || !region || !navBar || !mega) return;
+
+                console.log('[Nav Debug] Elements found:', {
+                    shell: !!shell,
+                    region: !!region,
+                    navBar: !!navBar,
+                    mega: !!mega
+                });
+
+                if (!shell || !region || !navBar || !mega) {
+                    console.log('[Nav Debug] Missing required elements, exiting');
+                    return;
+                }
 
                 const panels = Array.from(mega.querySelectorAll('[data-menu-panel]'));
                 const triggers = Array.from(document.querySelectorAll('.ff-nav__links [data-menu-trigger]'));
                 const ctaSlot = mega.querySelector('.ff-mega__cta-slot');
                 const ctas = ctaSlot ? Array.from(ctaSlot.querySelectorAll('[data-menu-cta]')) : [];
 
-                if (!panels.length || !triggers.length) return;
+                console.log('[Nav Debug] Panels:', panels.length, 'Triggers:', triggers.length, 'CTAs:', ctas.length);
+
+                if (!panels.length || !triggers.length) {
+                    console.log('[Nav Debug] No panels or triggers, exiting');
+                    return;
+                }
 
                 let activeKey = null;
                 let isOpen = false;
@@ -291,12 +307,15 @@
                     const cta = key ? ctaForKey(key) : null;
                     const panelH = panel ? measureElement(panel) : 0;
                     const ctaH = cta ? measureElement(cta) : 0;
-                    const contentH = navH + panelH + ctaH + (isOpen ? openExtra() : 0);
+                    const extra = isOpen ? openExtra() : 0;
+                    const contentH = navH + panelH + ctaH + extra;
+                    console.log('[Nav Debug] setShellHeightForKey:', { key, navH, panelH, ctaH, extra, contentH });
                     setShellHeightFromContent(contentH);
                 }
 
                 function openMenu(key) {
                     if (!key) return;
+                    console.log('[Nav Debug] openMenu:', key);
                     isOpen = true;
                     activeKey = key;
                     shell.classList.add('ff-nav-container--animated', 'ff-nav-container--open');
@@ -307,10 +326,13 @@
 
                 function closeMenu() {
                     if (!isOpen) return;
+                    console.log('[Nav Debug] closeMenu');
                     isOpen = false;
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
-                    setShellHeightFromContent(baseNavHeight());
+                    const navH = baseNavHeight();
+                    console.log('[Nav Debug] closeMenu baseNavHeight:', navH);
+                    setShellHeightFromContent(navH);
                     panels.forEach(p => p.classList.remove('ff-mega__panel--active'));
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
                 }

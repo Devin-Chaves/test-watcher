@@ -12,7 +12,10 @@
 
         .ff-nav-container.ff-nav-container--animated {
             overflow: hidden;
-            border-radius: 0 0 12px 12px;
+            border-radius: 16px;
+            -webkit-backdrop-filter: blur(50px);
+            backdrop-filter: blur(50px);
+            background-color: #fffc;
             transition: height 220ms ease-out;
             will-change: height;
         }
@@ -201,13 +204,12 @@
             /* ========================= DESKTOP MEGA (UNCHANGED) ========================= */
             (function initDesktopMega(){
                 const shell = document.querySelector('.ff-nav-container');
-                const region = shell && shell.querySelector('.ff-nav-region');
-                const navBar = region && region.querySelector('.ff-nav__bar');
+                const navBar = shell && shell.querySelector('.ff-nav__bar');
                 const mega = document.getElementById('ff-mega');
 
-                console.log('[NAV INIT]', { shell: !!shell, region: !!region, navBar: !!navBar, mega: !!mega });
+                console.log('[NAV INIT]', { shell: !!shell, navBar: !!navBar, mega: !!mega });
 
-                if (!shell || !region || !navBar || !mega) return;
+                if (!shell || !navBar || !mega) return;
 
                 const panels = Array.from(mega.querySelectorAll('[data-menu-panel]'));
                 const triggers = Array.from(document.querySelectorAll('.ff-nav__links [data-menu-trigger]'));

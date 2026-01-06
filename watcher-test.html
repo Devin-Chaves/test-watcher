@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigation</title>
     <style>
-        /* ========================= DESKTOP MEGA (AS-IS) ========================= */
-        .ff-nav-container {
-            --ff-nav-backdrop-pad: 24px;
-        }
-
+        /* ========================= DESKTOP MEGA ========================= */
         .ff-nav-container.ff-nav-container--animated {
             overflow: hidden;
             border-radius: 16px;
@@ -81,9 +77,13 @@
                 right: 0;
                 height: var(--ff-nav-mobile-chrome-h);
                 background: #fff;
-                border-bottom: 1px solid rgba(0,0,0,0.08);
                 z-index: 10;
                 display: none;
+            }
+
+            /* Remove border-top from first section in any panel */
+            .ff-nav-mobile__panel .ff-nav-mobile__section:first-child {
+                border-top: none;
             }
 
             [data-nav-mobile].ff-nav-mobile--chrome-on .ff-nav-mobile__chrome{

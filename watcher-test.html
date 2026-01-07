@@ -236,15 +236,14 @@
                 function getHeight(el) {
                     if (!el) return 0;
                     const styles = getComputedStyle(el);
+                    const isAbsolute = styles.position === 'absolute';
                     const wasHidden = styles.visibility === 'hidden' || styles.display === 'none';
-                    if (wasHidden) {
-                        el.style.visibility = 'visible';
-                        el.style.position = 'relative';
+                    if (isAbsolute || wasHidden) {
+                        el.style.cssText = 'visibility: visible !important; position: relative !important;';
                     }
                     const h = el.offsetHeight;
-                    if (wasHidden) {
-                        el.style.visibility = '';
-                        el.style.position = '';
+                    if (isAbsolute || wasHidden) {
+                        el.style.cssText = '';
                     }
                     return h;
                 }

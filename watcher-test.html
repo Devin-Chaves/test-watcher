@@ -24,14 +24,14 @@
         #ff-mega .ff-mega__panel {
             display: none;
             opacity: 0;
-            transition: opacity 220ms ease-out;
+            transition: opacity 180ms ease-out;
         }
 
         #ff-mega .ff-mega__panel.ff-mega__panel--active {
             display: block;
         }
 
-        #ff-mega .ff-mega__panel.ff-mega__panel--visible {
+        #ff-mega .ff-mega__panel.ff-mega__panel--active.ff-mega__panel--visible {
             opacity: 1;
         }
 
@@ -263,20 +263,19 @@
                     ctas.forEach((c, k) => c.classList.toggle('ff-mega__cta--active', k === key));
                     shell.classList.add('ff-nav-container--open');
                     setHeight(key);
-                    // Delay opacity so drawer opens first
-                    setTimeout(() => {
-                        panels.get(key)?.classList.add('ff-mega__panel--visible');
-                    }, 100);
+                    // Wait a tick for display:block to apply, then fade in
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            panels.get(key)?.classList.add('ff-mega__panel--visible');
+                        });
+                    });
                 }
 
                 function close() {
                     if (!activeKey) return;
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
-                    panels.forEach(p => {
-                        p.classList.remove('ff-mega__panel--visible');
-                        p.classList.remove('ff-mega__panel--active');
-                    });
+                    panels.forEach(p => p.classList.remove('ff-mega__panel--visible', 'ff-mega__panel--active'));
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
                     setHeight(null);
                 }

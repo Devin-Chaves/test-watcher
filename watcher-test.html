@@ -280,10 +280,7 @@
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
                             panels.get(key)?.classList.add('ff-mega__panel--visible');
-                            // Delay CTA until drawer animation completes
-                            setTimeout(() => {
-                                ctas.get(key)?.classList.add('ff-mega__cta--visible');
-                            }, 220);
+                            ctas.get(key)?.classList.add('ff-mega__cta--visible');
                         });
                     });
                 }

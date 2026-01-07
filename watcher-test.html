@@ -235,10 +235,17 @@
 
                 function getHeight(el) {
                     if (!el) return 0;
-                    const wasHidden = getComputedStyle(el).display === 'none';
-                    if (wasHidden) el.style.display = 'block';
+                    const styles = getComputedStyle(el);
+                    const wasHidden = styles.visibility === 'hidden' || styles.display === 'none';
+                    if (wasHidden) {
+                        el.style.visibility = 'visible';
+                        el.style.position = 'relative';
+                    }
                     const h = el.offsetHeight;
-                    if (wasHidden) el.style.display = '';
+                    if (wasHidden) {
+                        el.style.visibility = '';
+                        el.style.position = '';
+                    }
                     return h;
                 }
 

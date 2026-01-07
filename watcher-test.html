@@ -254,10 +254,10 @@
                     ctas.forEach((c, k) => c.classList.toggle('ff-mega__cta--active', k === key));
                     shell.classList.add('ff-nav-container--open');
                     setHeight(key);
-                    // Delay opacity for transition
-                    requestAnimationFrame(() => {
+                    // Delay opacity so drawer opens first
+                    setTimeout(() => {
                         panels.get(key)?.classList.add('ff-mega__panel--visible');
-                    });
+                    }, 150);
                 }
 
                 function close() {

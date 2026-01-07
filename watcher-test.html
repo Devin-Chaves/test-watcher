@@ -16,7 +16,7 @@
                 -webkit-backdrop-filter: blur(50px);
                 backdrop-filter: blur(50px);
                 background-color: #fffc;
-                transition: height 220ms ease-out;
+                transition: height 300ms ease-out;
                 will-change: height;
             }
         }
@@ -24,17 +24,14 @@
         #ff-mega .ff-mega__panel {
             display: none;
             opacity: 0;
-            transition: opacity 250ms ease-out, display 250ms ease-out allow-discrete;
-        }
-
-        @starting-style {
-            #ff-mega .ff-mega__panel.ff-mega__panel--active {
-                opacity: 0;
-            }
+            transition: opacity 300ms ease-out;
         }
 
         #ff-mega .ff-mega__panel.ff-mega__panel--active {
             display: block;
+        }
+
+        #ff-mega .ff-mega__panel.ff-mega__panel--visible {
             opacity: 1;
         }
 
@@ -250,17 +247,27 @@
                 function open(key) {
                     if (activeKey === key) return;
                     activeKey = key;
-                    panels.forEach((p, k) => p.classList.toggle('ff-mega__panel--active', k === key));
+                    panels.forEach((p, k) => {
+                        p.classList.toggle('ff-mega__panel--active', k === key);
+                        p.classList.remove('ff-mega__panel--visible');
+                    });
                     ctas.forEach((c, k) => c.classList.toggle('ff-mega__cta--active', k === key));
                     shell.classList.add('ff-nav-container--open');
                     setHeight(key);
+                    // Delay opacity for transition
+                    requestAnimationFrame(() => {
+                        panels.get(key)?.classList.add('ff-mega__panel--visible');
+                    });
                 }
 
                 function close() {
                     if (!activeKey) return;
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
-                    panels.forEach(p => p.classList.remove('ff-mega__panel--active'));
+                    panels.forEach(p => {
+                        p.classList.remove('ff-mega__panel--visible');
+                        p.classList.remove('ff-mega__panel--active');
+                    });
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
                     setHeight(null);
                 }

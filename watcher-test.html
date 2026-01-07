@@ -21,18 +21,20 @@
             }
         }
 
-        /* Default panel state - hidden and ready to transition */
+        /* Default panel state - hidden but in DOM for transitions */
         #ff-mega .ff-mega__panel {
-            display: none;
+            position: absolute;
+            visibility: hidden;
             opacity: 0;
-            transition: opacity 0.25s ease-out;
+            transition: opacity 0.25s ease-out, visibility 0s 0.25s;
         }
 
         /* Active panel - fade in with delay to sync with drawer height */
         #ff-mega .ff-mega__panel.ff-mega__panel--active {
-            display: block;
+            position: relative;
+            visibility: visible;
             opacity: 1;
-            transition: opacity 0.25s ease-out 0.2s;
+            transition: opacity 0.25s ease-out 0.2s, visibility 0s 0s;
         }
 
         #ff-mega .ff-mega__cta {

@@ -37,10 +37,16 @@
 
         #ff-mega .ff-mega__cta {
             display: none;
+            opacity: 0;
+            transition: opacity 180ms ease-out;
         }
 
         #ff-mega .ff-mega__cta.ff-mega__cta--active {
             display: flex;
+        }
+
+        #ff-mega .ff-mega__cta.ff-mega__cta--active.ff-mega__cta--visible {
+            opacity: 1;
         }
 
         /* ========================= MOBILE NAV (OUTSIDE SHELL) + CHROME BEHAVIOR ========================= */
@@ -260,13 +266,20 @@
                         p.classList.toggle('ff-mega__panel--active', k === key);
                         p.classList.remove('ff-mega__panel--visible');
                     });
-                    ctas.forEach((c, k) => c.classList.toggle('ff-mega__cta--active', k === key));
+                    ctas.forEach((c, k) => {
+                        c.classList.toggle('ff-mega__cta--active', k === key);
+                        c.classList.remove('ff-mega__cta--visible');
+                    });
                     shell.classList.add('ff-nav-container--open');
                     setHeight(key);
-                    // Wait a tick for display:block to apply, then fade in
+                    // Wait a tick for display to apply, then fade in
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
                             panels.get(key)?.classList.add('ff-mega__panel--visible');
+                            // Delay CTA a bit more so drawer finishes first
+                            setTimeout(() => {
+                                ctas.get(key)?.classList.add('ff-mega__cta--visible');
+                            }, 100);
                         });
                     });
                 }
@@ -276,7 +289,7 @@
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
                     panels.forEach(p => p.classList.remove('ff-mega__panel--visible', 'ff-mega__panel--active'));
-                    ctas.forEach(c => c.classList.remove('ff-mega__cta--active'));
+                    ctas.forEach(c => c.classList.remove('ff-mega__cta--visible', 'ff-mega__cta--active'));
                     setHeight(null);
                 }
 

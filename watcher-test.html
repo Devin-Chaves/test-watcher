@@ -252,6 +252,8 @@
                     panels.forEach((p, k) => p.classList.toggle('ff-mega__panel--active', k === key));
                     ctas.forEach((c, k) => c.classList.toggle('ff-mega__cta--active', k === key));
                     shell.classList.add('ff-nav-container--open');
+                    // Force reflow so panel has position: relative before measuring
+                    void panels.get(key)?.offsetHeight;
                     setHeight(key);
                 }
 

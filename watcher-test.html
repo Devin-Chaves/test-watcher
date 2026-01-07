@@ -24,7 +24,13 @@
         #ff-mega .ff-mega__panel {
             display: none;
             opacity: 0;
-            transition: opacity 180ms ease-out;
+            transition: opacity 250ms ease-out, display 250ms ease-out allow-discrete;
+        }
+
+        @starting-style {
+            #ff-mega .ff-mega__panel.ff-mega__panel--active {
+                opacity: 0;
+            }
         }
 
         #ff-mega .ff-mega__panel.ff-mega__panel--active {

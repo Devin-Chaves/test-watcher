@@ -21,20 +21,15 @@
             }
         }
 
-        /* Default panel state - hidden but in DOM for transitions */
         #ff-mega .ff-mega__panel {
-            position: absolute;
-            visibility: hidden;
+            display: none;
             opacity: 0;
-            transition: opacity 0.25s ease-out, visibility 0s 0.25s;
+            transition: opacity 180ms ease-out;
         }
 
-        /* Active panel - fade in with delay to sync with drawer height */
         #ff-mega .ff-mega__panel.ff-mega__panel--active {
-            position: relative;
-            visibility: visible;
+            display: block;
             opacity: 1;
-            transition: opacity 0.25s ease-out 0.2s, visibility 0s 0s;
         }
 
         #ff-mega .ff-mega__cta {
@@ -252,8 +247,6 @@
                     panels.forEach((p, k) => p.classList.toggle('ff-mega__panel--active', k === key));
                     ctas.forEach((c, k) => c.classList.toggle('ff-mega__cta--active', k === key));
                     shell.classList.add('ff-nav-container--open');
-                    // Force reflow so panel has position: relative before measuring
-                    void panels.get(key)?.offsetHeight;
                     setHeight(key);
                 }
 

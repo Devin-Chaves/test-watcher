@@ -16,7 +16,7 @@
                 -webkit-backdrop-filter: blur(50px);
                 backdrop-filter: blur(50px);
                 background-color: #fffc;
-                transition: height 300ms ease-out;
+                transition: height 220ms ease-out;
                 will-change: height;
             }
         }
@@ -24,7 +24,7 @@
         #ff-mega .ff-mega__panel {
             display: none;
             opacity: 0;
-            transition: opacity 300ms ease-out;
+            transition: opacity 220ms ease-out;
         }
 
         #ff-mega .ff-mega__panel.ff-mega__panel--active {
@@ -266,7 +266,7 @@
                     // Delay opacity so drawer opens first
                     setTimeout(() => {
                         panels.get(key)?.classList.add('ff-mega__panel--visible');
-                    }, 150);
+                    }, 100);
                 }
 
                 function close() {

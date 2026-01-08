@@ -341,7 +341,7 @@
                 panels.forEach(p => panelByKey.set(p.getAttribute('data-mobile-panel'), p));
 
                 const chromeTitleEl = mobileRoot.querySelector('[data-mobile-chrome-title]');
-                const navOmniEl = document.querySelector('.ff-nav-omni');
+                const navContainerEl = document.querySelector('.ff-nav-container');
 
                 let navH = 56;
                 let isOpen = false;
@@ -349,13 +349,7 @@
                 let lastFocus = null;
 
                 function measureNavH(){
-                    if (!navOmniEl) { navH = 56; return; }
-                    // Get height of banner + nav desktop, excluding mobile nav
-                    const banner = navOmniEl.querySelector('.ff-banner-wrapper');
-                    const navDesktop = navOmniEl.querySelector('.ff-nav-desktop');
-                    const bannerH = banner ? banner.offsetHeight : 0;
-                    const navH_desktop = navDesktop ? navDesktop.offsetHeight : 56;
-                    navH = bannerH + navH_desktop;
+                    navH = navContainerEl ? navContainerEl.offsetHeight : 56;
                 }
 
                 function currentKey(){

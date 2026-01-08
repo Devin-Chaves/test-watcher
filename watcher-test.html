@@ -378,20 +378,7 @@
 
                 function getPanelTitle(key){
                     const panel = panelByKey.get(key);
-                    if (!panel) return '';
-
-                    const dt = (panel.dataset && panel.dataset.panelTitle) ? panel.dataset.panelTitle : panel.getAttribute('data-panel-title');
-                    if (dt && String(dt).trim()) return String(dt).trim();
-
-                    const labelled = panel.getAttribute('aria-labelledby');
-                    if (labelled) {
-                        const el = document.getElementById(labelled);
-                        if (el && el.textContent && el.textContent.trim()) return el.textContent.trim();
-                    }
-
-                    const t = panel.querySelector('.ff-nav-mobile__title');
-                    if (t && t.textContent && t.textContent.trim()) return t.textContent.trim();
-                    return '';
+                    return panel?.dataset.panelTitle?.trim() || '';
                 }
 
                 function syncChromeAndTop(){

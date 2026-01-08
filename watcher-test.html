@@ -15,24 +15,13 @@
         @media (min-width: 992px) {
             .ff-nav-container.ff-nav-container--animated {
                 border-radius: 16px;
+                overflow: hidden;
+                transition: clip-path 220ms ease-out;
+                will-change: clip-path;
             }
 
             #ff-mega {
-                position: absolute;
-                left: 0;
-                right: 0;
                 overflow: hidden;
-                border-radius: 0 0 16px 16px;
-                -webkit-backdrop-filter: blur(50px);
-                backdrop-filter: blur(50px);
-                background-color: #fffc;
-                max-height: 0;
-                transition: max-height 220ms ease-out;
-                will-change: max-height;
-            }
-
-            #ff-mega.ff-mega--open {
-                max-height: 600px;
             }
         }
 
@@ -255,10 +244,25 @@
                 const triggers = document.querySelectorAll('.ff-nav__links [data-menu-trigger]');
                 if (!panels.size || !triggers.length) return;
 
+                const EXTRA_PAD = 24;
                 const CLOSE_DELAY = 150;
 
                 let activeKey = null;
                 let closeTimer = null;
+
+                function getHeight(el) {
+                    if (!el) return 0;
+                    return el.offsetHeight;
+                }
+
+                function setClip(key) {
+                    const navH = navBar.offsetHeight || 0;
+                    const panelH = key ? getHeight(panels.get(key)) : 0;
+                    const ctaH = key ? getHeight(ctas.get(key)) : 0;
+                    const extra = key ? EXTRA_PAD : 0;
+                    const totalH = navH + panelH + ctaH + extra;
+                    shell.style.clipPath = 'inset(0 0 calc(100% - ' + totalH + 'px) 0 round 16px)';
+                }
 
                 function open(key) {
                     if (activeKey === key) return;
@@ -272,7 +276,7 @@
                         c.classList.remove('ff-mega__cta--visible');
                     });
                     shell.classList.add('ff-nav-container--open');
-                    mega.classList.add('ff-mega--open');
+                    setClip(key);
                     // Wait a tick for display to apply, then fade in
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
@@ -286,13 +290,14 @@
                     if (!activeKey) return;
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
-                    mega.classList.remove('ff-mega--open');
+                    setClip(null);
                     panels.forEach(p => p.classList.remove('ff-mega__panel--visible', 'ff-mega__panel--active'));
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--visible', 'ff-mega__cta--active'));
                 }
 
                 // Initialize
                 shell.classList.add('ff-nav-container--animated');
+                setClip(null);
 
                 // Event handlers
                 triggers.forEach(t => {

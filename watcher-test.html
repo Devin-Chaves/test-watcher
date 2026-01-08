@@ -16,6 +16,19 @@
             background-color: #fff;
         }
 
+        /* Swap hamburger/close icons when mobile nav is open */
+        .ff-nav__toggle__close-img {
+            display: none;
+        }
+
+        body.ff-nav-mobile-open .ff-nav__toggle img:not(.ff-nav__toggle__close-img) {
+            display: none;
+        }
+
+        body.ff-nav-mobile-open .ff-nav__toggle__close-img {
+            display: block;
+        }
+
         @media (min-width: 992px) {
             .ff-nav-container.ff-nav-container--animated {
                 border-radius: 16px;

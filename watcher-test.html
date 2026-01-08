@@ -7,15 +7,14 @@
     <style>
         /* ========================= DESKTOP MEGA ========================= */
         .ff-nav-container.ff-nav-container--animated {
-            background-color: #fff;
+            -webkit-backdrop-filter: blur(50px);
+            backdrop-filter: blur(50px);
+            background-color: #fffc;
         }
 
         @media (min-width: 992px) {
             .ff-nav-container.ff-nav-container--animated {
                 border-radius: 16px;
-                -webkit-backdrop-filter: blur(50px);
-                backdrop-filter: blur(50px);
-                background-color: #fffc;
                 transition: height 220ms ease-out;
                 will-change: height;
             }

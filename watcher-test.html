@@ -342,6 +342,7 @@
 
                 const chromeTitleEl = mobileRoot.querySelector('[data-mobile-chrome-title]');
                 const navBarEl = document.querySelector('.ff-nav__bar');
+                const bannerEl = document.querySelector('.ff-banner-wrapper');
 
                 let navH = 56;
                 let isOpen = false;
@@ -349,8 +350,9 @@
                 let lastFocus = null;
 
                 function measureNavH(){
-                    const h = navBarEl && navBarEl.offsetHeight;
-                    navH = (h && h > 0) ? h : 56;
+                    const barH = navBarEl ? navBarEl.offsetHeight : 56;
+                    const bannerH = bannerEl ? bannerEl.offsetHeight : 0;
+                    navH = barH + bannerH;
                 }
 
                 function currentKey(){

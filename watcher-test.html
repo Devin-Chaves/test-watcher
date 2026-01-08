@@ -15,9 +15,8 @@
         @media (min-width: 992px) {
             .ff-nav-container.ff-nav-container--animated {
                 border-radius: 16px;
-                overflow: hidden;
-                transition: clip-path 220ms ease-out;
-                will-change: clip-path;
+                transition: height 220ms ease-out;
+                will-change: height;
             }
 
             #ff-mega {
@@ -255,13 +254,12 @@
                     return el.offsetHeight;
                 }
 
-                function setClip(key) {
+                function setHeight(key) {
                     const navH = navBar.offsetHeight || 0;
                     const panelH = key ? getHeight(panels.get(key)) : 0;
                     const ctaH = key ? getHeight(ctas.get(key)) : 0;
                     const extra = key ? EXTRA_PAD : 0;
-                    const totalH = navH + panelH + ctaH + extra;
-                    shell.style.clipPath = 'inset(0 0 calc(100% - ' + totalH + 'px) 0 round 16px)';
+                    shell.style.height = (navH + panelH + ctaH + extra) + 'px';
                 }
 
                 function open(key) {
@@ -276,7 +274,7 @@
                         c.classList.remove('ff-mega__cta--visible');
                     });
                     shell.classList.add('ff-nav-container--open');
-                    setClip(key);
+                    setHeight(key);
                     // Wait a tick for display to apply, then fade in
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
@@ -290,14 +288,14 @@
                     if (!activeKey) return;
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
-                    setClip(null);
+                    setHeight(null);
                     panels.forEach(p => p.classList.remove('ff-mega__panel--visible', 'ff-mega__panel--active'));
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--visible', 'ff-mega__cta--active'));
                 }
 
                 // Initialize
                 shell.classList.add('ff-nav-container--animated');
-                setClip(null);
+                setHeight(null);
 
                 // Event handlers
                 triggers.forEach(t => {

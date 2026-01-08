@@ -262,7 +262,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Dynamic git info | 2026-01-08T17:52');
+            console.log('Nav JS | Inline getPanelTitle, single rAF | 2026-01-08T18:15');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */
@@ -309,10 +309,8 @@
                     setHeight(key);
                     // Wait a tick for display to apply, then fade in
                     requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            panels.get(key)?.classList.add('ff-mega__panel--visible');
-                            ctas.get(key)?.classList.add('ff-mega__cta--visible');
-                        });
+                        panels.get(key)?.classList.add('ff-mega__panel--visible');
+                        ctas.get(key)?.classList.add('ff-mega__cta--visible');
                     });
                     // Close search
 										document.dispatchEvent(new CustomEvent('quick-search:close'))
@@ -367,15 +365,10 @@
                 let currentKey = 'root';
                 let lastFocus = null;
 
-                function getPanelTitle(key){
-                    const panel = panelByKey.get(key);
-                    return panel?.dataset.panelTitle?.trim() || '';
-                }
-
                 function syncChrome(){
                     const isSub = currentKey !== 'root';
                     mobileRoot.classList.toggle('ff-nav-mobile--chrome-on', isSub);
-                    if (chromeTitleEl) chromeTitleEl.textContent = isSub ? getPanelTitle(currentKey) : '';
+                    if (chromeTitleEl) chromeTitleEl.textContent = isSub ? (panelByKey.get(currentKey)?.dataset.panelTitle?.trim() || '') : '';
                 }
 
                 function setAria() {

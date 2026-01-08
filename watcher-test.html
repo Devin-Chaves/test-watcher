@@ -262,7 +262,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Inline getPanelTitle, single rAF | 2026-01-08T18:15');
+            console.log('Nav JS | Combine classList.remove | 2026-01-08T18:20');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */
@@ -401,12 +401,11 @@
 
                 function closeMenu() {
                     isOpen = false;
-                    mobileRoot.classList.remove('ff-nav-mobile--open');
-                    mobileRoot.classList.remove('ff-nav-mobile--chrome-on');
+                    mobileRoot.classList.remove('ff-nav-mobile--open', 'ff-nav-mobile--chrome-on');
                     document.body.classList.remove('ff-nav-mobile-open');
                     panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
                     setAria();
-                    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+                    if (lastFocus?.focus) lastFocus.focus();
                 }
 
                 function goTo(key) {

@@ -77,26 +77,28 @@
         @media (max-width: 991px) {
             [data-nav-mobile]{
                 display: none;
-                --ff-nav-mobile-top: 0px;
                 --ff-nav-mobile-chrome-h: 56px;
             }
 
             [data-nav-mobile].ff-nav-mobile--open{
                 display: block;
-                position: fixed;
+                position: absolute;
                 left: 0;
                 right: 0;
-                top: var(--ff-nav-mobile-top);
+                top: 0;
                 bottom: 0;
-                z-index: 9999;
+                height: 100vh;
+                z-index: 1;
                 background: rgba(0,0,0,0.5);
             }
 
             .ff-nav-mobile__track{
                 position: absolute;
-                inset: 0;
+                top: var(--ff-nav-mobile-chrome-h);
+                left: 0;
+                right: 0;
+                bottom: 0;
                 width: 100%;
-                height: 100%;
                 background: #fff;
                 overflow: hidden;
             }
@@ -342,7 +344,6 @@
 
                 const chromeTitleEl = mobileRoot.querySelector('[data-mobile-chrome-title]');
 
-                const NAV_H = 56;
                 let isOpen = false;
                 let stack = ['root'];
                 let lastFocus = null;
@@ -372,7 +373,6 @@
                 function syncChromeAndTop(){
                     const isSub = stack.length > 1;
                     mobileRoot.classList.toggle('ff-nav-mobile--chrome-on', isSub);
-                    mobileRoot.style.setProperty('--ff-nav-mobile-top', (isSub ? 0 : NAV_H) + 'px');
                     if (chromeTitleEl) chromeTitleEl.textContent = isSub ? (getPanelTitle(currentKey()) || '') : '';
                 }
 
@@ -408,7 +408,6 @@
                     isOpen = false;
                     mobileRoot.classList.remove('ff-nav-mobile--open');
                     mobileRoot.classList.remove('ff-nav-mobile--chrome-on');
-                    mobileRoot.style.setProperty('--ff-nav-mobile-top', '0px');
                     document.body.classList.remove('ff-nav-mobile-open');
                     panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
                     setAria();

@@ -262,9 +262,8 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const mqDesktop = window.matchMedia('(min-width: 992px)');
             const mqMobile = window.matchMedia('(max-width: 991px)');
-
+            
             /* ========================= DESKTOP MEGA ========================= */
             (function initDesktopMega() {
                 const shell = document.querySelector('.ff-nav-container');
@@ -320,6 +319,9 @@
                             ctas.get(key)?.classList.add('ff-mega__cta--visible');
                         });
                     });
+                    // Close search
+										document.dispatchEvent(new CustomEvent('quick-search:close'))
+
                 }
 
                 function close() {
@@ -355,6 +357,7 @@
             (function initMobileNav(){
                 const mobileRoot = document.querySelector('[data-nav-mobile]');
                 const toggleBtn = document.querySelector('[data-nav-toggle]');
+                const toggleSearch = document.querySelector('[data-search-toggle]');
                 if (!mobileRoot || !toggleBtn) return;
 
                 const panels = Array.from(mobileRoot.querySelectorAll('[data-mobile-panel]'));
@@ -459,6 +462,15 @@
                     if (!mqMobile.matches) return;
                     e.preventDefault();
                     isOpen ? closeMenu() : openMenu();
+                });
+                
+                toggleSearch.addEventListener('click', (e) => {
+                		if (!mqMobile.matches) return;
+                    e.preventDefault();
+                    isOpen ? closeMenu() : openMenu();
+										// Open search
+										document.dispatchEvent(new CustomEvent('quick-search:open'))
+
                 });
 
                 mobileRoot.addEventListener('click', (e) => {

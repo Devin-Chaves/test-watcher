@@ -464,26 +464,30 @@
                     isOpen ? closeMenu() : openMenu();
                 });
                 
-                toggleSearch.addEventListener('click', (e) => {
-                		if (!mqMobile.matches) return;
-                    e.preventDefault();
-                    isOpen ? closeMenu() : openMenu();
-										// Open search
-										document.dispatchEvent(new CustomEvent('quick-search:open'))
-
-                });
-
-                mobileRoot.addEventListener('click', (e) => {
-                    if (!mqMobile.matches) return;
-                    if (!isOpen) return;
-                    if (e.target === mobileRoot) closeMenu();
-                });
+                if (toggleSearch) {
+                    toggleSearch.addEventListener('click', (e) => {
+                        if (!mqMobile.matches) return;
+                        e.preventDefault();
+                        isOpen ? closeMenu() : openMenu();
+                        // Open search
+                        document.dispatchEvent(new CustomEvent('quick-search:open'))
+                    });
+                }
 
                 mobileRoot.addEventListener('click', (e) => {
                     if (!mqMobile.matches) return;
                     if (!isOpen) return;
+
+                    // Click on backdrop closes menu
+                    if (e.target === mobileRoot) {
+                        closeMenu();
+                        return;
+                    }
+
+                    // Handle link clicks
                     const link = e.target.closest('a');
                     if (!link) return;
+
                     if (link.hasAttribute('data-mobile-chrome-close')) {
                         e.preventDefault();
                         closeMenu();
@@ -516,12 +520,6 @@
                     if (!mqMobile.matches) return;
                     if (!isOpen) return;
                     if (e.key === 'Escape') closeMenu();
-                });
-
-                window.addEventListener('resize', () => {
-                    if (!mqMobile.matches) return;
-                    if (!isOpen) return;
-                    syncChromeAndTop();
                 });
 
                 mqMobile.addEventListener('change', (e) => {

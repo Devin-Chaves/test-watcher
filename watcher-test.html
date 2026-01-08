@@ -341,16 +341,11 @@
                 panels.forEach(p => panelByKey.set(p.getAttribute('data-mobile-panel'), p));
 
                 const chromeTitleEl = mobileRoot.querySelector('[data-mobile-chrome-title]');
-                const navContainerEl = document.querySelector('.ff-nav-container');
 
-                let navH = 56;
+                const NAV_H = 56;
                 let isOpen = false;
                 let stack = ['root'];
                 let lastFocus = null;
-
-                function measureNavH(){
-                    navH = navContainerEl ? navContainerEl.offsetHeight : 56;
-                }
 
                 function currentKey(){
                     return stack[stack.length - 1] || 'root';
@@ -375,10 +370,9 @@
                 }
 
                 function syncChromeAndTop(){
-                    measureNavH();
                     const isSub = stack.length > 1;
                     mobileRoot.classList.toggle('ff-nav-mobile--chrome-on', isSub);
-                    mobileRoot.style.setProperty('--ff-nav-mobile-top', (isSub ? 0 : navH) + 'px');
+                    mobileRoot.style.setProperty('--ff-nav-mobile-top', (isSub ? 0 : NAV_H) + 'px');
                     if (chromeTitleEl) chromeTitleEl.textContent = isSub ? (getPanelTitle(currentKey()) || '') : '';
                 }
 

@@ -286,17 +286,11 @@
                 let activeKey = null;
                 let closeTimer = null;
 
-                function getHeight(el) {
-                    if (!el) return 0;
-                    return el.offsetHeight;
-                }
-
                 function setHeight(key) {
-                    const navH = navBar.offsetHeight || 0;
-                    const panelH = key ? getHeight(panels.get(key)) : 0;
-                    const ctaH = key ? getHeight(ctas.get(key)) : 0;
-                    const extra = key ? EXTRA_PAD : 0;
-                    shell.style.height = (navH + panelH + ctaH + extra) + 'px';
+                    const navH = navBar.offsetHeight;
+                    const panelH = panels.get(key)?.offsetHeight || 0;
+                    const ctaH = ctas.get(key)?.offsetHeight || 0;
+                    shell.style.height = (navH + panelH + ctaH + (key ? EXTRA_PAD : 0)) + 'px';
                 }
 
                 function open(key) {

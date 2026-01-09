@@ -10,10 +10,20 @@
             pointer-events: none;
         }
 
+        /* Nav link hover/focus */
+        .ff-nav__link {
+            transition: background-color 0.25s ease-out;
+        }
+
+        .ff-nav__link:hover,
+        .ff-nav__link:focus-visible {
+            background-color: rgba(60, 59, 58, 0.07);
+        }
+
         /* Caret flip on hover/active */
         .ff-nav__link .caret-down,
         .ff-nav__link .caret-up {
-            transition: opacity 0.15s ease-out;
+            transition: opacity 0.25s ease-out;
         }
 
         .ff-nav__link:hover .caret-down,
@@ -287,7 +297,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Caret flip on hover/active | 2026-01-08T19:50');
+            console.log('Nav JS | Nav link hover + caret flip | 2026-01-08T20:05');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

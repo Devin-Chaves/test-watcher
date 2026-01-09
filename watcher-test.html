@@ -10,6 +10,22 @@
             pointer-events: none;
         }
 
+        /* Caret flip on hover/active */
+        .ff-nav__link .caret-down,
+        .ff-nav__link .caret-up {
+            transition: opacity 0.15s ease-out;
+        }
+
+        .ff-nav__link:hover .caret-down,
+        .ff-nav__link[aria-expanded="true"] .caret-down {
+            opacity: 0;
+        }
+
+        .ff-nav__link:hover .caret-up,
+        .ff-nav__link[aria-expanded="true"] .caret-up {
+            opacity: 1;
+        }
+
         .ff-nav-container.ff-nav-container--animated {
             -webkit-backdrop-filter: blur(50px);
             backdrop-filter: blur(50px);
@@ -271,7 +287,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Fix nav link hover flicker | 2026-01-08T19:05');
+            console.log('Nav JS | Caret flip on hover/active | 2026-01-08T19:50');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */
@@ -314,6 +330,7 @@
                         c.classList.toggle('ff-mega__cta--active', k === key);
                         c.classList.remove('ff-mega__cta--visible');
                     });
+                    triggers.forEach(t => t.setAttribute('aria-expanded', t.dataset.menuTrigger === key));
                     shell.classList.add('ff-nav-container--open');
                     setHeight(key);
                     // Wait a tick for display to apply, then fade in
@@ -333,6 +350,7 @@
                     setHeight(null);
                     panels.forEach(p => p.classList.remove('ff-mega__panel--visible', 'ff-mega__panel--active'));
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--visible', 'ff-mega__cta--active'));
+                    triggers.forEach(t => t.setAttribute('aria-expanded', 'false'));
                 }
 
                 // Initialize

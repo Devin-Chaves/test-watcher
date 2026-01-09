@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigation</title>
     <style>
+    		.ff-banner-wrapper {
+        	background: linear-gradient(99.92deg, #DE781F -56.36%, #40231A 33.21%);
+        }
         /* ========================= DESKTOP MEGA ========================= */
         .ff-nav__link p {
             pointer-events: none;
@@ -38,6 +41,26 @@
 
         .ff-nav__link:hover .caret-up,
         .ff-nav__link[aria-expanded="true"] .caret-up {
+            opacity: 1;
+        }
+
+        /* Popular item hover arrow */
+        .ff-mega__popular-title {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .ff-mega__popular-title::after {
+            content: '';
+            width: 14px;
+            height: 14px;
+            margin-left: 4px;
+            opacity: 0;
+            transition: opacity 0.2s ease-out;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cpath d='M5 2.5 9.5 7 5 11.5' stroke='%2391908F' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+        }
+
+        .ff-mega__popular-item:hover .ff-mega__popular-title::after {
             opacity: 1;
         }
 
@@ -474,7 +497,7 @@
                     toggleSearch.addEventListener('click', (e) => {
                         if (!mqMobile.matches) return;
                         e.preventDefault();
-                        isOpen ? closeMenu() : openMenu();
+                        openMenu();
                         // Open search
                         document.dispatchEvent(new CustomEvent('quick-search:open'))
                     });

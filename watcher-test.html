@@ -226,7 +226,7 @@
                 -webkit-overflow-scrolling: touch;
                 background: transparent;
                 padding-top: 0;
-                padding-bottom: calc(var(--ff-nav-mobile-chrome-h) * 2);
+                padding-bottom: 112px;
             }
 
             /* When chrome is on, hide any in-panel headers so spacing is clean */
@@ -263,7 +263,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Double panel padding-bottom | 2026-01-08T18:36');
+            console.log('Nav JS | Hardcode 112px padding-bottom | 2026-01-08T18:38');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

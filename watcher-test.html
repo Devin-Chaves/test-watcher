@@ -18,15 +18,15 @@
 
         /* Swap hamburger/close icons when mobile nav is open */
         .ff-nav__toggle__close-img {
-            display: none;
+            opacity: 0;
         }
 
         body.ff-nav-mobile-open .ff-nav__toggle__open-img {
-            display: none;
+            opacity: 0;
         }
 
         body.ff-nav-mobile-open .ff-nav__toggle__close-img {
-            display: block;
+            opacity: 1;
         }
 
         @media (min-width: 992px) {
@@ -226,6 +226,7 @@
                 -webkit-overflow-scrolling: touch;
                 background: transparent;
                 padding-top: 0;
+                padding-bottom: calc(var(--ff-nav-mobile-chrome-h) * 2);
             }
 
             /* When chrome is on, hide any in-panel headers so spacing is clean */
@@ -262,7 +263,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Combine classList.remove | 2026-01-08T18:20');
+            console.log('Nav JS | Double panel padding-bottom | 2026-01-08T18:36');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

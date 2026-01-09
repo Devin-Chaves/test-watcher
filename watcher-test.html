@@ -73,12 +73,12 @@
         }
 
         /* Mega link hover arrow */
-        .ff-mega__link {
+        a.ff-mega__link {
             display: inline-flex;
             align-items: center;
         }
 
-        .ff-mega__link::after {
+        a.ff-mega__link::after {
             content: '';
             width: 14px;
             height: 14px;
@@ -88,7 +88,7 @@
             background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cpath d='M5 2.5 9.5 7 5 11.5' stroke='%2391908F' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
         }
 
-        .ff-mega__link:hover::after {
+        a.ff-mega__link:hover::after {
             opacity: 1;
         }
 
@@ -353,7 +353,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Standardize transitions 0.2s | 2026-01-08T20:50');
+            console.log('Nav JS | Fix double arrow on mega link | 2026-01-08T20:55');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

@@ -21,6 +21,10 @@
         }
 
         /* Caret flip on hover/active */
+        .ff-nav__item-caret {
+            pointer-events: none;
+        }
+
         .ff-nav__link .caret-down,
         .ff-nav__link .caret-up {
             transition: opacity 0.25s ease-out;
@@ -297,7 +301,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Nav link hover + caret flip | 2026-01-08T20:05');
+            console.log('Nav JS | Fix caret pointer-events | 2026-01-08T20:15');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

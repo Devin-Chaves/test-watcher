@@ -64,6 +64,14 @@
             opacity: 1;
         }
 
+        .ff-mega__popular-sub {
+            transition: color 0.2s ease-out;
+        }
+
+        .ff-mega__popular-item:hover .ff-mega__popular-sub {
+            color: #31302F;
+        }
+
         /* Mega link hover arrow */
         .ff-mega__link {
             display: inline-flex;
@@ -345,7 +353,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Mega link hover arrow | 2026-01-08T20:40');
+            console.log('Nav JS | Popular sub color hover | 2026-01-08T20:45');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

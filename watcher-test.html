@@ -6,6 +6,10 @@
     <title>Navigation</title>
     <style>
         /* ========================= DESKTOP MEGA ========================= */
+        .ff-nav__link p {
+            pointer-events: none;
+        }
+
         .ff-nav-container.ff-nav-container--animated {
             -webkit-backdrop-filter: blur(50px);
             backdrop-filter: blur(50px);
@@ -267,7 +271,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Add col--popular max-width tablet | 2026-01-08T18:40');
+            console.log('Nav JS | Fix nav link hover flicker | 2026-01-08T19:05');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

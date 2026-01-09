@@ -43,6 +43,10 @@
 
         /* Tablet breakpoint tweaks (992px - 1024px) */
         @media (min-width: 992px) and (max-width: 1024px) {
+            .ff-mega__col--popular {
+                max-width: 220px;
+            }
+
             .ff-mega__popular-item {
                 min-width: 196px !important;
             }
@@ -263,7 +267,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Hardcode 112px padding-bottom | 2026-01-08T18:38');
+            console.log('Nav JS | Add col--popular max-width tablet | 2026-01-08T18:40');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

@@ -16,7 +16,6 @@
         /* Nav link hover/focus */
         .ff-nav__link {
             transition: background-color 0.3s ease-out;
-            transition-delay: 0.08s;
         }
 
         .ff-nav__link:hover,
@@ -44,19 +43,9 @@
             display: block !important;
         }
 
-        .ff-nav__link .caret-down,
-        .ff-nav__link .caret-up {
-            transition: opacity 0.25s ease-out;
-        }
-
-        .ff-nav__link:hover .caret-down,
-        .ff-nav__link[aria-expanded="true"] .caret-down {
-            opacity: 0;
-        }
-
-        .ff-nav__link:hover .caret-up,
-        .ff-nav__link[aria-expanded="true"] .caret-up {
-            opacity: 1;
+        /* Caret morphing handled by ff-caret-morph SVG rotation + fill animation */
+        svg.ff-caret-morph {
+            transition: transform 0.3s ease-out, fill 0.3s ease-out;
         }
 
         /* Popular item hover arrow */
@@ -368,7 +357,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Caret rotation animation on hover | 2026-01-12T16:50');
+            console.log('Nav JS | Caret rotation animation on hover | 2026-01-12T20:25');
 
             // Fix SVG bounding box - force containers to 14x14
             const fixSVGBoundingBox = () => {

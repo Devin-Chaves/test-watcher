@@ -16,6 +16,7 @@
         /* Nav link hover/focus */
         .ff-nav__link {
             transition: background-color 0.2s ease-out;
+            transition-delay: 0.08s;
         }
 
         .ff-nav__link:hover,
@@ -353,7 +354,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Nav JS | Fix double arrow on mega link | 2026-01-08T20:55');
+            console.log('Nav JS | Add delay to nav link hover | 2026-01-08T21:00');
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

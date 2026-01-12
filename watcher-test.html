@@ -459,10 +459,7 @@
                         // Reset caret morph animation to down state
                         const svg = t.querySelector('svg.ff-caret-morph');
                         if (svg) {
-                            const morphDown = svg.querySelector('#morphToDown');
-                            const colorDown = svg.querySelector('#colorToDown');
-                            if (morphDown) morphDown.beginElement();
-                            if (colorDown) colorDown.beginElement();
+                            svg.classList.remove('active', 'closing');
                         }
                     });
                 }
@@ -476,13 +473,11 @@
                     t.addEventListener('mouseenter', () => {
                         clearTimeout(closeTimer);
                         open(t.dataset.menuTrigger);
-                        // Trigger caret morph animation to up state
+                        // Play caret morph animation to up state
                         const svg = t.querySelector('svg.ff-caret-morph');
                         if (svg) {
-                            const morphUp = svg.querySelector('#morphToUp');
-                            const colorUp = svg.querySelector('#colorToUp');
-                            if (morphUp) morphUp.beginElement();
-                            if (colorUp) colorUp.beginElement();
+                            svg.classList.remove('closing');
+                            svg.classList.add('active');
                         }
                     });
 
@@ -490,10 +485,8 @@
                         // Reverse caret morph animation to down state
                         const svg = t.querySelector('svg.ff-caret-morph');
                         if (svg) {
-                            const morphDown = svg.querySelector('#morphToDown');
-                            const colorDown = svg.querySelector('#colorToDown');
-                            if (morphDown) morphDown.beginElement();
-                            if (colorDown) colorDown.beginElement();
+                            svg.classList.remove('active');
+                            svg.classList.add('closing');
                         }
                     });
                 });

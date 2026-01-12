@@ -434,7 +434,16 @@
                         c.classList.toggle('ff-mega__cta--active', k === key);
                         c.classList.remove('ff-mega__cta--visible');
                     });
-                    triggers.forEach(t => t.setAttribute('aria-expanded', t.dataset.menuTrigger === key));
+                    triggers.forEach(t => {
+                        t.setAttribute('aria-expanded', t.dataset.menuTrigger === key);
+                        // Activate caret for the open trigger
+                        const svg = t.querySelector('svg.ff-caret-morph');
+                        if (t.dataset.menuTrigger === key && svg) {
+                            svg.classList.add('active');
+                        } else if (svg) {
+                            svg.classList.remove('active');
+                        }
+                    });
                     shell.classList.add('ff-nav-container--open');
                     setHeight(key);
                     // Wait a tick for display to apply, then fade in
@@ -471,15 +480,6 @@
                     t.addEventListener('mouseenter', () => {
                         clearTimeout(closeTimer);
                         open(t.dataset.menuTrigger);
-                        // Rotate caret
-                        const svg = t.querySelector('svg.ff-caret-morph');
-                        if (svg) svg.classList.add('active');
-                    });
-
-                    t.addEventListener('mouseleave', () => {
-                        // Rotate caret back
-                        const svg = t.querySelector('svg.ff-caret-morph');
-                        if (svg) svg.classList.remove('active');
                     });
                 });
 

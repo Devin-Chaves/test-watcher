@@ -28,6 +28,20 @@
         /* Caret flip on hover/active */
         .ff-nav__item-caret {
             pointer-events: none;
+            width: 14px !important;
+            height: 14px !important;
+            display: inline-block !important;
+        }
+
+        /* Fix SVG embed container bounding box */
+        .w-embed:has(svg.ff-arrow-morph) {
+            width: 14px !important;
+            height: 14px !important;
+            display: block !important;
+        }
+
+        svg.ff-arrow-morph {
+            display: block !important;
         }
 
         .ff-nav__link .caret-down,
@@ -355,6 +369,29 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             console.log('Nav JS | Animated arrow morph on hover | 2026-01-08T21:05');
+
+            // Fix SVG bounding box - force containers to 14x14
+            const fixSVGBoundingBox = () => {
+                const svgs = document.querySelectorAll('svg.ff-arrow-morph');
+                svgs.forEach(svg => {
+                    const embed = svg.parentElement;
+                    const caret = embed?.parentElement;
+                    if (embed) {
+                        embed.style.setProperty('width', '14px', 'important');
+                        embed.style.setProperty('height', '14px', 'important');
+                        embed.style.setProperty('display', 'block', 'important');
+                    }
+                    if (caret) {
+                        caret.style.setProperty('width', '14px', 'important');
+                        caret.style.setProperty('height', '14px', 'important');
+                        caret.style.setProperty('display', 'inline-block', 'important');
+                    }
+                });
+            };
+            fixSVGBoundingBox();
+            // Also run after a delay to catch dynamically loaded SVGs
+            setTimeout(fixSVGBoundingBox, 1000);
+
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

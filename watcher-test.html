@@ -153,7 +153,9 @@
         #ff-mega .ff-mega__panel {
             display: none;
             opacity: 0;
-            transition: opacity 180ms ease-out;
+            transform: translateY(-8px);
+            transition: opacity 200ms ease-out, transform 200ms ease-out;
+            will-change: opacity, transform;
         }
 
         #ff-mega .ff-mega__panel.ff-mega__panel--active {
@@ -162,12 +164,15 @@
 
         #ff-mega .ff-mega__panel.ff-mega__panel--active.ff-mega__panel--visible {
             opacity: 1;
+            transform: translateY(0);
         }
 
         #ff-mega .ff-mega__cta {
             display: none;
             opacity: 0;
-            transition: opacity 180ms ease-out;
+            transform: translateY(-8px);
+            transition: opacity 200ms ease-out, transform 200ms ease-out;
+            will-change: opacity, transform;
         }
 
         #ff-mega .ff-mega__cta.ff-mega__cta--active {
@@ -176,6 +181,7 @@
 
         #ff-mega .ff-mega__cta.ff-mega__cta--active.ff-mega__cta--visible {
             opacity: 1;
+            transform: translateY(0);
         }
 
         /* ========================= MOBILE NAV (OUTSIDE SHELL) + CHROME BEHAVIOR ========================= */
@@ -415,7 +421,6 @@
                 function open(key) {
                     if (activeKey === key) return;
                     activeKey = key;
-                    console.log(`[MEGA] opening: ${key}`);
                     panels.forEach((p, k) => {
                         p.classList.toggle('ff-mega__panel--active', k === key);
                         p.classList.remove('ff-mega__panel--visible');
@@ -453,7 +458,6 @@
 
                 function close() {
                     if (!activeKey) return;
-                    console.log(`[MEGA] closing: ${activeKey}`);
                     activeKey = null;
                     shell.classList.remove('ff-nav-container--open');
                     setHeight(null);

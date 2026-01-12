@@ -456,9 +456,14 @@
                     ctas.forEach(c => c.classList.remove('ff-mega__cta--visible', 'ff-mega__cta--active'));
                     triggers.forEach(t => {
                         t.setAttribute('aria-expanded', 'false');
-                        // Reset caret morph animation
+                        // Reset caret morph animation to down state
                         const svg = t.querySelector('svg.ff-caret-morph');
-                        if (svg) svg.classList.remove('active');
+                        if (svg) {
+                            const morphDown = svg.querySelector('#morphToDown');
+                            const colorDown = svg.querySelector('#colorToDown');
+                            if (morphDown) morphDown.beginElement();
+                            if (colorDown) colorDown.beginElement();
+                        }
                     });
                 }
 
@@ -471,15 +476,25 @@
                     t.addEventListener('mouseenter', () => {
                         clearTimeout(closeTimer);
                         open(t.dataset.menuTrigger);
-                        // Trigger caret morph animation
+                        // Trigger caret morph animation to up state
                         const svg = t.querySelector('svg.ff-caret-morph');
-                        if (svg) svg.classList.add('active');
+                        if (svg) {
+                            const morphUp = svg.querySelector('#morphToUp');
+                            const colorUp = svg.querySelector('#colorToUp');
+                            if (morphUp) morphUp.beginElement();
+                            if (colorUp) colorUp.beginElement();
+                        }
                     });
 
                     t.addEventListener('mouseleave', () => {
-                        // Reverse caret morph animation
+                        // Reverse caret morph animation to down state
                         const svg = t.querySelector('svg.ff-caret-morph');
-                        if (svg) svg.classList.remove('active');
+                        if (svg) {
+                            const morphDown = svg.querySelector('#morphToDown');
+                            const colorDown = svg.querySelector('#colorToDown');
+                            if (morphDown) morphDown.beginElement();
+                            if (colorDown) colorDown.beginElement();
+                        }
                     });
                 });
 

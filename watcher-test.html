@@ -358,7 +358,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c Increase mega menu transition durations for more leisurely appearance — Panel: 350ms (80ms delay), CTA: 280ms | 2026-01-12T20:45', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c Defer heavy DOM work to requestAnimationFrame to prevent blocking CSS transitions — fixes background-color flicker | 2026-01-12T20:52', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             // Fix SVG bounding box - force containers to 14x14
             const fixSVGBoundingBox = () => {
@@ -416,35 +416,38 @@
                 function open(key) {
                     if (activeKey === key) return;
                     activeKey = key;
-                    panels.forEach((p, k) => {
-                        p.classList.toggle('ff-mega__panel--active', k === key);
-                        p.classList.remove('ff-mega__panel--visible');
-                    });
-                    ctas.forEach((c, k) => {
-                        c.classList.toggle('ff-mega__cta--active', k === key);
-                        c.classList.remove('ff-mega__cta--visible');
-                    });
-                    triggers.forEach(t => {
-                        const shouldExpand = t.dataset.menuTrigger === key;
-                        const isCurrentlyExpanded = t.getAttribute('aria-expanded') === 'true';
-                        // Only update if state actually changes - prevents interrupt of CSS transition
-                        if (isCurrentlyExpanded !== shouldExpand) {
-                            t.setAttribute('aria-expanded', shouldExpand);
-                        }
-                        // Activate caret for the open trigger
-                        const svg = t.querySelector('svg.ff-caret-morph');
-                        if (t.dataset.menuTrigger === key && svg) {
-                            svg.classList.add('active');
-                        } else if (svg) {
-                            svg.classList.remove('active');
-                        }
-                    });
-                    shell.classList.add('ff-nav-container--open');
-                    setHeight(key);
-                    // Wait a tick for display to apply, then fade in
+                    // Defer heavy DOM work to next frame to prevent blocking CSS transitions
                     requestAnimationFrame(() => {
-                        panels.get(key)?.classList.add('ff-mega__panel--visible');
-                        ctas.get(key)?.classList.add('ff-mega__cta--visible');
+                        panels.forEach((p, k) => {
+                            p.classList.toggle('ff-mega__panel--active', k === key);
+                            p.classList.remove('ff-mega__panel--visible');
+                        });
+                        ctas.forEach((c, k) => {
+                            c.classList.toggle('ff-mega__cta--active', k === key);
+                            c.classList.remove('ff-mega__cta--visible');
+                        });
+                        triggers.forEach(t => {
+                            const shouldExpand = t.dataset.menuTrigger === key;
+                            const isCurrentlyExpanded = t.getAttribute('aria-expanded') === 'true';
+                            // Only update if state actually changes - prevents interrupt of CSS transition
+                            if (isCurrentlyExpanded !== shouldExpand) {
+                                t.setAttribute('aria-expanded', shouldExpand);
+                            }
+                            // Activate caret for the open trigger
+                            const svg = t.querySelector('svg.ff-caret-morph');
+                            if (t.dataset.menuTrigger === key && svg) {
+                                svg.classList.add('active');
+                            } else if (svg) {
+                                svg.classList.remove('active');
+                            }
+                        });
+                        shell.classList.add('ff-nav-container--open');
+                        setHeight(key);
+                        // Wait another tick for display to apply, then fade in
+                        requestAnimationFrame(() => {
+                            panels.get(key)?.classList.add('ff-mega__panel--visible');
+                            ctas.get(key)?.classList.add('ff-mega__cta--visible');
+                        });
                     });
                     // Close search
 										document.dispatchEvent(new CustomEvent('quick-search:close'))
@@ -454,19 +457,22 @@
                 function close() {
                     if (!activeKey) return;
                     activeKey = null;
-                    shell.classList.remove('ff-nav-container--open');
-                    setHeight(null);
-                    panels.forEach(p => p.classList.remove('ff-mega__panel--visible', 'ff-mega__panel--active'));
-                    ctas.forEach(c => c.classList.remove('ff-mega__cta--visible', 'ff-mega__cta--active'));
-                    triggers.forEach(t => {
-                        const isCurrentlyExpanded = t.getAttribute('aria-expanded') === 'true';
-                        // Only update if state actually changes - prevents interrupt of CSS transition
-                        if (isCurrentlyExpanded) {
-                            t.setAttribute('aria-expanded', 'false');
-                        }
-                        // Reset caret to down state
-                        const svg = t.querySelector('svg.ff-caret-morph');
-                        if (svg) svg.classList.remove('active');
+                    // Defer heavy DOM work to next frame
+                    requestAnimationFrame(() => {
+                        shell.classList.remove('ff-nav-container--open');
+                        setHeight(null);
+                        panels.forEach(p => p.classList.remove('ff-mega__panel--visible', 'ff-mega__panel--active'));
+                        ctas.forEach(c => c.classList.remove('ff-mega__cta--visible', 'ff-mega__cta--active'));
+                        triggers.forEach(t => {
+                            const isCurrentlyExpanded = t.getAttribute('aria-expanded') === 'true';
+                            // Only update if state actually changes - prevents interrupt of CSS transition
+                            if (isCurrentlyExpanded) {
+                                t.setAttribute('aria-expanded', 'false');
+                            }
+                            // Reset caret to down state
+                            const svg = t.querySelector('svg.ff-caret-morph');
+                            if (svg) svg.classList.remove('active');
+                        });
                     });
                 }
 

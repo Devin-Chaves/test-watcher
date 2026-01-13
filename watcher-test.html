@@ -338,7 +338,6 @@
                 opacity: 1;
                 pointer-events: auto;
                 z-index: 2;
-                transform: translateX(0);
             }
 
             /* Directional slide classes */
@@ -392,7 +391,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 7060d43 | Transform fix: explicit translateX(0) on active class', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c WORKING | Fade-in transitions with class-based directional slides', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             // Fix SVG bounding box - force containers to 14x14
             const fixSVGBoundingBox = () => {
@@ -547,7 +546,6 @@
                 let isOpen = false;
                 let currentKey = 'root';
                 let lastFocus = null;
-                let isTransitioning = false;
 
                 function syncChrome(){
                     const isSub = currentKey !== 'root';
@@ -569,9 +567,6 @@
                     // Skip if already on this panel AND it already has the active class
                     if (currentKey === key && next.classList.contains('ff-nav-mobile__panel--active')) return;
 
-                    // Skip if a transition is already in progress (prevent overlapping animations)
-                    if (isTransitioning && direction) return;
-
                     currentKey = key;
 
                     // If no direction specified, simple opacity fade (e.g., initial open)
@@ -581,9 +576,6 @@
                         syncChrome();
                         return;
                     }
-
-                    // Set transition lock
-                    isTransitioning = true;
 
                     // Two-phase slide + fade transition
                     requestAnimationFrame(() => {
@@ -620,12 +612,6 @@
                             // The active class will bring it to translateX(0)
                             next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
                             console.log('[NAV-DEBUG] Phase 2: Removed directional classes from', key);
-
-                            // Release transition lock after animation completes
-                            setTimeout(() => {
-                                isTransitioning = false;
-                                console.log('[NAV-DEBUG] Transition lock released');
-                            }, 200);
                         });
                     });
 

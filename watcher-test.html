@@ -726,6 +726,12 @@
                 setAria();
             })();
         });
+
+        // If DOM is already loaded (e.g., script injected after page load), run immediately
+        if (document.readyState !== 'loading') {
+            const event = new Event('DOMContentLoaded');
+            document.dispatchEvent(event);
+        }
     </script>
 </body>
 </html>

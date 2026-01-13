@@ -317,14 +317,16 @@
                 width: 100%;
                 height: 100%;
                 opacity: 0;
+                transform: translateX(0);
                 pointer-events: none;
-                transition: opacity 200ms ease-out;
-                will-change: opacity;
+                transition: opacity 200ms ease-out, transform 200ms ease-out;
+                will-change: opacity, transform;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
                 background: transparent;
                 padding-top: 0;
                 padding-bottom: 112px;
+                z-index: 1;
             }
 
             /* When chrome is on, hide any in-panel headers so spacing is clean */
@@ -335,11 +337,39 @@
             .ff-nav-mobile__panel.ff-nav-mobile__panel--active{
                 opacity: 1;
                 pointer-events: auto;
+                z-index: 2;
+            }
+
+            /* Directional slide classes */
+            .ff-nav-mobile__panel--enter-right {
+                transform: translateX(50%);
+                z-index: 2;
+            }
+
+            .ff-nav-mobile__panel--enter-left {
+                transform: translateX(-50%);
+                z-index: 2;
+            }
+
+            .ff-nav-mobile__panel--exit-left {
+                transform: translateX(-50%);
+            }
+
+            .ff-nav-mobile__panel--exit-right {
+                transform: translateX(50%);
             }
 
             @media (prefers-reduced-motion: reduce) {
                 .ff-nav-mobile__panel {
-                    transition: none;
+                    transition: opacity 200ms ease-out;
+                    transform: translateX(0) !important;
+                }
+
+                .ff-nav-mobile__panel--enter-right,
+                .ff-nav-mobile__panel--enter-left,
+                .ff-nav-mobile__panel--exit-right,
+                .ff-nav-mobile__panel--exit-left {
+                    transform: translateX(0) !important;
                 }
             }
         }
@@ -528,11 +558,68 @@
                     toggleBtn.setAttribute('aria-label', isOpen ? 'Close primary navigation' : 'Open primary navigation');
                 }
 
-                function setActive(key) {
-                    currentKey = key;
-                    panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+                function setActive(key, direction = null) {
+                    const prev = panelByKey.get(currentKey);
                     const next = panelByKey.get(key) || panelByKey.get('root');
-                    if (next) next.classList.add('ff-nav-mobile__panel--active');
+
+                    if (!next || currentKey === key) return;
+
+                    currentKey = key;
+
+                    // If no direction specified, simple opacity fade (e.g., initial open)
+                    if (!direction) {
+                        panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+                        if (next) next.classList.add('ff-nav-mobile__panel--active');
+                        syncChrome();
+                        return;
+                    }
+
+                    // Two-phase slide + fade transition
+                    requestAnimationFrame(() => {
+                        // Phase 1: Set up initial states
+                        // Remove active from all panels
+                        panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+
+                        // Remove any leftover directional classes
+                        panels.forEach(p => {
+                            p.classList.remove(
+                                'ff-nav-mobile__panel--enter-right',
+                                'ff-nav-mobile__panel--enter-left',
+                                'ff-nav-mobile__panel--exit-right',
+                                'ff-nav-mobile__panel--exit-left'
+                            );
+                        });
+
+                        // Position new panel at starting position based on direction
+                        if (direction === 'forward') {
+                            next.classList.add('ff-nav-mobile__panel--enter-right');
+                            if (prev) prev.classList.add('ff-nav-mobile__panel--exit-left');
+                        } else if (direction === 'backward') {
+                            next.classList.add('ff-nav-mobile__panel--enter-left');
+                            if (prev) prev.classList.add('ff-nav-mobile__panel--exit-right');
+                        }
+
+                        // Phase 2: Trigger transition on next frame
+                        requestAnimationFrame(() => {
+                            // Activate new panel (triggers slide to center + fade in)
+                            next.classList.add('ff-nav-mobile__panel--active');
+
+                            // Remove directional classes to trigger slide
+                            // The active class will bring it to translateX(0)
+                            next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
+
+                            // Optional: Clean up old panel classes after transition completes
+                            if (prev) {
+                                setTimeout(() => {
+                                    prev.classList.remove(
+                                        'ff-nav-mobile__panel--exit-left',
+                                        'ff-nav-mobile__panel--exit-right'
+                                    );
+                                }, 200); // Match transition duration
+                            }
+                        });
+                    });
+
                     syncChrome();
                 }
 
@@ -563,14 +650,14 @@
                 function goTo(key) {
                     if (!mqMobile.matches) return;
                     if (!panelByKey.has(key)) return;
-                    setActive(key);
+                    setActive(key, 'forward');
                 }
 
                 function goBack() {
                     if (!mqMobile.matches) return;
                     const panel = panelByKey.get(currentKey);
                     const parent = panel?.dataset.panelParent || 'root';
-                    setActive(parent);
+                    setActive(parent, 'backward');
                 }
 
                 closeMenu();

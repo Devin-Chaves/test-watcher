@@ -342,21 +342,21 @@
 
             /* Directional slide classes */
             .ff-nav-mobile__panel--enter-right {
-                transform: translateX(50%);
+                transform: translateX(100%);
                 z-index: 2;
             }
 
             .ff-nav-mobile__panel--enter-left {
-                transform: translateX(-50%);
+                transform: translateX(-100%);
                 z-index: 2;
             }
 
             .ff-nav-mobile__panel--exit-left {
-                transform: translateX(-50%);
+                transform: translateX(-100%);
             }
 
             .ff-nav-mobile__panel--exit-right {
-                transform: translateX(50%);
+                transform: translateX(100%);
             }
 
             @media (prefers-reduced-motion: reduce) {
@@ -391,7 +391,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c a876ef4 | Update mobile chrome header height to 57px | 2026-01-13 13:55:37 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c Implementing full off-canvas sliding panels (100% translateX)...', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
@@ -576,6 +576,15 @@
                             next.classList.add('ff-nav-mobile__panel--enter-right');
                         } else if (direction === 'backward') {
                             next.classList.add('ff-nav-mobile__panel--enter-left');
+                        }
+
+                        // Position outgoing panel for exit animation
+                        if (prev && prev !== next) {
+                            if (direction === 'forward') {
+                                prev.classList.add('ff-nav-mobile__panel--exit-left');
+                            } else if (direction === 'backward') {
+                                prev.classList.add('ff-nav-mobile__panel--exit-right');
+                            }
                         }
 
                         // Phase 2: Trigger transition on next frame

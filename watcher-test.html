@@ -603,22 +603,27 @@
                         // Position new panel at starting position based on direction
                         if (direction === 'forward') {
                             next.classList.add('ff-nav-mobile__panel--enter-right');
+                            console.log('[NAV-DEBUG] Phase 1: Added enter-right to', key);
                         } else if (direction === 'backward') {
                             next.classList.add('ff-nav-mobile__panel--enter-left');
+                            console.log('[NAV-DEBUG] Phase 1: Added enter-left to', key);
                         }
 
                         // Phase 2: Trigger transition on next frame
                         requestAnimationFrame(() => {
                             // Activate new panel (triggers slide to center + fade in)
                             next.classList.add('ff-nav-mobile__panel--active');
+                            console.log('[NAV-DEBUG] Phase 2: Added active to', key);
 
                             // Remove directional classes to trigger slide
                             // The active class will bring it to translateX(0)
                             next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
+                            console.log('[NAV-DEBUG] Phase 2: Removed directional classes from', key);
 
                             // Release transition lock after animation completes
                             setTimeout(() => {
                                 isTransitioning = false;
+                                console.log('[NAV-DEBUG] Transition lock released');
                             }, 200);
                         });
                     });

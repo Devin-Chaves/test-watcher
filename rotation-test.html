@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caret Rotation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .nav-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            user-select: none;
+        }
+        .nav-item:hover {
+            background-color: #e9e9e9;
+        }
+        .nav-item-label {
+            font-weight: 600;
+        }
+        svg {
+            width: 14px;
+            height: 14px;
+            display: block;
+        }
+        .instructions {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-left: 3px solid #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Caret Rotation Test</h1>
+
+    <div class="test-container">
+        <h2>Test: Hover to rotate caret</h2>
+        <div class="nav-item" id="test1">
+            <span class="nav-item-label">Solutions</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="ff-caret-morph">
+<defs>
+<style>
+svg.ff-caret-morph {
+  display: block;
+  transition: transform 0.3s ease-out, fill 0.3s ease-out;
+}
+
+svg.ff-caret-morph.active {
+  transform: rotate(180deg);
+  fill: #31302F;
+}
+</style>
+</defs>
+<path d="M11.6848 5.55953L7.30977 9.93453C7.26914 9.97521 7.22089 10.0075 7.16778 10.0295C7.11467 10.0515 7.05774 10.0628 7.00024 10.0628C6.94275 10.0628 6.88582 10.0515 6.83271 10.0295C6.7796 10.0075 6.73134 9.97521 6.69071 9.93453L2.31571 5.55953C2.23362 5.47744 2.1875 5.3661 2.1875 5.25C2.1875 5.1339 2.23362 5.02256 2.31571 4.94047C2.3978 4.85837 2.50915 4.81226 2.62524 4.81226C2.74134 4.81226 2.85268 4.85837 2.93477 4.94047L7.00024 9.00648L11.0657 4.94047C11.1064 4.89982 11.1546 4.86758 11.2077 4.84558C11.2608 4.82358 11.3178 4.81226 11.3752 4.81226C11.4327 4.81226 11.4897 4.82358 11.5428 4.84558C11.5959 4.86758 11.6441 4.89982 11.6848 4.94047C11.7254 4.98112 11.7577 5.02937 11.7797 5.08248C11.8017 5.13559 11.813 5.19251 11.813 5.25C11.813 5.30748 11.8017 5.36441 11.7797 5.41752C11.7577 5.47063 11.7254 5.51888 11.6848 5.55953Z" fill="#91908F"/>
+            </svg>
+        </div>
+        <div class="instructions">
+            👆 Hover to rotate the arrow from ∨ to ^ with color change. Move away to reverse.
+        </div>
+    </div>
+
+    <script>
+        const navItem = document.getElementById('test1');
+        const svg = navItem.querySelector('svg.ff-caret-morph');
+
+        navItem.addEventListener('mouseenter', () => {
+            svg.classList.add('active');
+            console.log('✓ Caret rotated to up');
+        });
+
+        navItem.addEventListener('mouseleave', () => {
+            svg.classList.remove('active');
+            console.log('✓ Caret rotated to down');
+        });
+    </script>
+</body>
+</html>

@@ -575,26 +575,24 @@
                             next.classList.add('ff-nav-mobile__panel--enter-left');
                         }
 
-                        // Position outgoing panel for exit animation (but keep it active for now)
-                        if (prev && prev !== next) {
-                            if (direction === 'forward') {
-                                prev.classList.add('ff-nav-mobile__panel--exit-left');
-                            } else if (direction === 'backward') {
-                                prev.classList.add('ff-nav-mobile__panel--exit-right');
-                            }
-                        }
-
                         // Phase 2: Trigger both animations simultaneously
                         requestAnimationFrame(() => {
-                            // Deactivate all panels first
+                            // Deactivate all panels
                             panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
 
                             // Activate incoming panel and remove its enter class to trigger slide+fade in
                             next.classList.add('ff-nav-mobile__panel--active');
                             next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
 
-                            // Outgoing panel animates to exit with its exit class
-                            // Both slide and fade over 200ms simultaneously
+                            // Apply exit class to outgoing panel to trigger slide+fade out
+                            // Must happen in Phase 2 so transform actually animates from 0 to ±100%
+                            if (prev && prev !== next) {
+                                if (direction === 'forward') {
+                                    prev.classList.add('ff-nav-mobile__panel--exit-left');
+                                } else if (direction === 'backward') {
+                                    prev.classList.add('ff-nav-mobile__panel--exit-right');
+                                }
+                            }
                         });
                     });
 

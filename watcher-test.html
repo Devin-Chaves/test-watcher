@@ -555,9 +555,9 @@
                         return;
                     }
 
-                    // Two-phase slide + fade transition
+                    // Two-phase slide + fade transition with simultaneous animation
                     requestAnimationFrame(() => {
-                        // Phase 1: Set up initial states
+                        // Phase 1: Set up initial positions (no animation yet)
                         // Remove active from all panels
                         panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
 
@@ -587,14 +587,18 @@
                             }
                         }
 
-                        // Phase 2: Trigger transition on next frame
+                        // Phase 2: Trigger both animations simultaneously
                         requestAnimationFrame(() => {
-                            // Activate new panel (triggers slide to center + fade in)
+                            // Activate new panel AND remove its directional class to trigger animation
                             next.classList.add('ff-nav-mobile__panel--active');
-
-                            // Remove directional classes to trigger slide
-                            // The active class will bring it to translateX(0)
                             next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
+
+                            // Activate outgoing panel so it stays visible while sliding out
+                            if (prev && prev !== next) {
+                                prev.classList.add('ff-nav-mobile__panel--active');
+                                // The exit class will cause the transform animation
+                                // The active class keeps opacity at 1 during the slide
+                            }
                         });
                     });
 

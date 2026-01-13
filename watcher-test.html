@@ -391,7 +391,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c Reverted to clean RAF transitions | Fade-in transitions, incoming slides over outgoing', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c Inline style transforms for explicit control | Fade-in transitions, incoming slides over outgoing', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             // Fix SVG bounding box - force containers to 14x14
             const fixSVGBoundingBox = () => {
@@ -584,21 +584,12 @@
                         // Remove active from all panels
                         panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
 
-                        // Remove any leftover directional classes
-                        panels.forEach(p => {
-                            p.classList.remove(
-                                'ff-nav-mobile__panel--enter-right',
-                                'ff-nav-mobile__panel--enter-left',
-                                'ff-nav-mobile__panel--exit-right',
-                                'ff-nav-mobile__panel--exit-left'
-                            );
-                        });
-
                         // Position new panel at starting position based on direction
+                        // Use inline style for explicit transform control
                         if (direction === 'forward') {
-                            next.classList.add('ff-nav-mobile__panel--enter-right');
+                            next.style.transform = 'translateX(50%)';
                         } else if (direction === 'backward') {
-                            next.classList.add('ff-nav-mobile__panel--enter-left');
+                            next.style.transform = 'translateX(-50%)';
                         }
 
                         // Phase 2: Trigger transition on next frame
@@ -606,9 +597,8 @@
                             // Activate new panel (triggers slide to center + fade in)
                             next.classList.add('ff-nav-mobile__panel--active');
 
-                            // Remove directional classes to trigger slide
-                            // The active class will bring it to translateX(0)
-                            next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
+                            // Clear inline style to trigger slide back to center (0)
+                            next.style.transform = '';
                         });
                     });
 

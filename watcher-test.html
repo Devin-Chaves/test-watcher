@@ -593,12 +593,8 @@
                             next.classList.add('ff-nav-mobile__panel--active');
                             next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
 
-                            // Activate outgoing panel so it stays visible while sliding out
-                            if (prev && prev !== next) {
-                                prev.classList.add('ff-nav-mobile__panel--active');
-                                // The exit class will cause the transform animation
-                                // The active class keeps opacity at 1 during the slide
-                            }
+                            // Outgoing panel stays inactive and slides/fades out with its exit class
+                            // Both panels animate over the same 200ms window
                         });
                     });
 

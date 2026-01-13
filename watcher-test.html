@@ -197,7 +197,7 @@
 
             [data-nav-mobile]{
                 display: none;
-                --ff-nav-mobile-chrome-h: 56px;
+                --ff-nav-mobile-chrome-h: 55px;
             }
 
             [data-nav-mobile].ff-nav-mobile--open{
@@ -340,24 +340,6 @@
                 z-index: 2;
             }
 
-            /* Directional slide classes */
-            .ff-nav-mobile__panel--enter-right {
-                transform: translateX(100%);
-                z-index: 2;
-            }
-
-            .ff-nav-mobile__panel--enter-left {
-                transform: translateX(-100%);
-                z-index: 2;
-            }
-
-            .ff-nav-mobile__panel--exit-left {
-                transform: translateX(-100%);
-            }
-
-            .ff-nav-mobile__panel--exit-right {
-                transform: translateX(100%);
-            }
 
             @media (prefers-reduced-motion: reduce) {
                 .ff-nav-mobile__panel {
@@ -391,7 +373,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 8c2d410 | Fix first-time animation - reorder Phase 2 to apply exit class before deactivation | 2026-01-13 20:40:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c Reverted to simple opacity fade - no slide animations | 2026-01-13 20:45:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
@@ -547,57 +529,9 @@
 
                     currentKey = key;
 
-                    // If no direction specified, simple opacity fade (e.g., initial open)
-                    if (!direction) {
-                        panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
-                        if (next) next.classList.add('ff-nav-mobile__panel--active');
-                        syncChrome();
-                        return;
-                    }
-
-                    // Two-phase slide + fade transition with simultaneous animation
-                    requestAnimationFrame(() => {
-                        // Phase 1: Set up initial positions (no animation yet)
-                        // Remove any leftover directional classes from all panels
-                        panels.forEach(p => {
-                            p.classList.remove(
-                                'ff-nav-mobile__panel--enter-right',
-                                'ff-nav-mobile__panel--enter-left',
-                                'ff-nav-mobile__panel--exit-right',
-                                'ff-nav-mobile__panel--exit-left'
-                            );
-                        });
-
-                        // Position incoming panel at starting position based on direction
-                        if (direction === 'forward') {
-                            next.classList.add('ff-nav-mobile__panel--enter-right');
-                        } else if (direction === 'backward') {
-                            next.classList.add('ff-nav-mobile__panel--enter-left');
-                        }
-
-                        // Phase 2: Trigger both animations simultaneously
-                        requestAnimationFrame(() => {
-                            // Apply exit class to outgoing panel FIRST (while it still has active)
-                            // This ensures the transform transition is active before deactivation
-                            if (prev && prev !== next) {
-                                if (direction === 'forward') {
-                                    prev.classList.add('ff-nav-mobile__panel--exit-left');
-                                } else if (direction === 'backward') {
-                                    prev.classList.add('ff-nav-mobile__panel--exit-right');
-                                }
-                            }
-
-                            // Remove enter class from incoming panel first
-                            next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
-
-                            // Now deactivate all panels (triggers opacity fade)
-                            panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
-
-                            // Finally activate incoming panel to complete the slide+fade in
-                            next.classList.add('ff-nav-mobile__panel--active');
-                        });
-                    });
-
+                    // Simple opacity fade - all panels stay in place
+                    panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+                    if (next) next.classList.add('ff-nav-mobile__panel--active');
                     syncChrome();
                 }
 

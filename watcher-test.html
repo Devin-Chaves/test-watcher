@@ -391,7 +391,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c Fix root panel not showing on menu open | NEW | 2026-01-13T20:05', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c Fade-in only transitions, incoming slides over outgoing | NEW | 2026-01-13T20:10', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             // Fix SVG bounding box - force containers to 14x14
             const fixSVGBoundingBox = () => {
@@ -596,10 +596,8 @@
                         // Position new panel at starting position based on direction
                         if (direction === 'forward') {
                             next.classList.add('ff-nav-mobile__panel--enter-right');
-                            if (prev) prev.classList.add('ff-nav-mobile__panel--exit-left');
                         } else if (direction === 'backward') {
                             next.classList.add('ff-nav-mobile__panel--enter-left');
-                            if (prev) prev.classList.add('ff-nav-mobile__panel--exit-right');
                         }
 
                         // Phase 2: Trigger transition on next frame
@@ -610,16 +608,6 @@
                             // Remove directional classes to trigger slide
                             // The active class will bring it to translateX(0)
                             next.classList.remove('ff-nav-mobile__panel--enter-right', 'ff-nav-mobile__panel--enter-left');
-
-                            // Optional: Clean up old panel classes after transition completes
-                            if (prev) {
-                                setTimeout(() => {
-                                    prev.classList.remove(
-                                        'ff-nav-mobile__panel--exit-left',
-                                        'ff-nav-mobile__panel--exit-right'
-                                    );
-                                }, 200); // Match transition duration
-                            }
                         });
                     });
 

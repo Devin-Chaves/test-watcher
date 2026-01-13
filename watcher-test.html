@@ -342,13 +342,13 @@
 
             /* Directional slide classes */
             .ff-nav-mobile__panel--enter-right {
-                opacity: 1;
+                opacity: 0;
                 transform: translateX(50%);
                 z-index: 2;
             }
 
             .ff-nav-mobile__panel--enter-left {
-                opacity: 1;
+                opacity: 0;
                 transform: translateX(-50%);
                 z-index: 2;
             }
@@ -393,7 +393,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 8286186 | FIX: opacity:1 on enter classes for visible slide animation', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c CORRECT: opacity:0 invisible at 50%, slide+fade to center', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             // Fix SVG bounding box - force containers to 14x14
             const fixSVGBoundingBox = () => {

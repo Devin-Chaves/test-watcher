@@ -393,28 +393,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             console.log('%c[NAV]%c cf39b68 | Fade-in only transitions, incoming slides over outgoing - REVERTED WORKING VERSION', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
-            // Fix SVG bounding box - force containers to 14x14
-            const fixSVGBoundingBox = () => {
-                const svgs = document.querySelectorAll('svg.ff-arrow-morph');
-                svgs.forEach(svg => {
-                    const embed = svg.parentElement;
-                    const caret = embed?.parentElement;
-                    if (embed) {
-                        embed.style.setProperty('width', '14px', 'important');
-                        embed.style.setProperty('height', '14px', 'important');
-                        embed.style.setProperty('display', 'block', 'important');
-                    }
-                    if (caret) {
-                        caret.style.setProperty('width', '14px', 'important');
-                        caret.style.setProperty('height', '14px', 'important');
-                        caret.style.setProperty('display', 'inline-block', 'important');
-                    }
-                });
-            };
-            fixSVGBoundingBox();
-            // Also run after a delay to catch dynamically loaded SVGs
-            setTimeout(fixSVGBoundingBox, 1000);
-
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
             /* ========================= DESKTOP MEGA ========================= */

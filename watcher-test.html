@@ -357,13 +357,13 @@
             .ff-nav-mobile__panel--exiting-to-left {
                 transform: translateX(-100%);
                 opacity: 1;
-                z-index: 5;
+                z-index: 15;
             }
 
             .ff-nav-mobile__panel--exiting-to-right {
                 transform: translateX(100%);
                 opacity: 1;
-                z-index: 5;
+                z-index: 15;
             }
 
             /* RESTING OFF-CANVAS POSITIONS */
@@ -413,7 +413,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 24094e4 | Remove fade from exiting panel animations - only slide, no opacity change | 2026-01-14 23:25:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c def69b1 | Increase z-index of exiting panels so they are visible during slide animation | 2026-01-14 23:30:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             

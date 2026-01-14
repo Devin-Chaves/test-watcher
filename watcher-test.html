@@ -411,7 +411,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 7a04edb | Fix panel animations - incoming panels fully opaque, all non-active panels positioned off-canvas to eliminate content bleed-through | 2026-01-14 23:15:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c 341dfe6 | Initialize off-canvas positioning when menu opens to fix first-navigation animation state | 2026-01-14 23:20:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
@@ -698,6 +698,18 @@
                     isOpen = true;
                     mobileRoot.classList.add('ff-nav-mobile--open');
                     document.body.classList.add('ff-nav-mobile-open');
+
+                    // Initialize all non-root panels to off-canvas positions
+                    panels.forEach(p => {
+                        const pKey = p.getAttribute('data-mobile-panel');
+                        if (pKey !== 'root') {
+                            const pDepth = layerDepth.get(pKey) || 2;
+                            p.classList.remove('ff-nav-mobile__panel--offscreen-left', 'ff-nav-mobile__panel--offscreen-right');
+                            // All non-root panels go to the right off-canvas (deeper layers)
+                            p.classList.add('ff-nav-mobile__panel--offscreen-right');
+                        }
+                    });
+
                     setActive('root');
                     setAria();
                     requestAnimationFrame(() => {

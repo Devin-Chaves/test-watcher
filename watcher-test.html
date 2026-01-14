@@ -554,8 +554,15 @@
                             // Focus search input in shadow DOM
                             setTimeout(() => {
                                 const quickSearch = document.querySelector('quick-search');
-                                const searchInput = quickSearch?.querySelector('input[type="search"], input[type="text"]');
-                                if (searchInput) searchInput.focus();
+                                if (quickSearch) {
+                                    // Try shadow DOM first (most likely case)
+                                    let searchInput = quickSearch.shadowRoot?.querySelector('input[type="search"], input[type="text"]');
+                                    // Fallback to light DOM if shadow DOM fails
+                                    if (!searchInput) {
+                                        searchInput = quickSearch.querySelector('input[type="search"], input[type="text"]');
+                                    }
+                                    if (searchInput) searchInput.focus();
+                                }
                             }, 50);
                         }, 50);
                     });
@@ -856,9 +863,16 @@
                         // Focus search input after animation completes
                         setTimeout(() => {
                             const quickSearch = document.querySelector('quick-search');
-                            const searchInput = quickSearch?.querySelector('input[type="search"], input[type="text"]');
-                            if (searchInput) searchInput.focus();
-                        }, 250); // Slightly longer than animation time (200ms)
+                            if (quickSearch) {
+                                // Try shadow DOM first (most likely case)
+                                let searchInput = quickSearch.shadowRoot?.querySelector('input[type="search"], input[type="text"]');
+                                // Fallback to light DOM if shadow DOM fails
+                                if (!searchInput) {
+                                    searchInput = quickSearch.querySelector('input[type="search"], input[type="text"]');
+                                }
+                                if (searchInput) searchInput.focus();
+                            }
+                        }, 400); // Wait longer for animation + mobile nav transitions
                         return;
                     }
                     const to = link.getAttribute('data-mobile-target');

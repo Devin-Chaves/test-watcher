@@ -542,6 +542,7 @@
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        console.log('[NAV] Megamenu search link clicked');
                         closingForSearch = true;
                         close();
                         // Reset flag after delay to allow normal mouseenter behavior
@@ -554,14 +555,23 @@
                             // Focus search input in shadow DOM
                             setTimeout(() => {
                                 const quickSearch = document.querySelector('quick-search');
+                                console.log('[NAV] quick-search element:', quickSearch);
+                                console.log('[NAV] has shadowRoot:', quickSearch?.shadowRoot);
                                 if (quickSearch) {
                                     // Try shadow DOM first (most likely case)
                                     let searchInput = quickSearch.shadowRoot?.querySelector('input[type="search"], input[type="text"]');
+                                    console.log('[NAV] shadowRoot input:', searchInput);
                                     // Fallback to light DOM if shadow DOM fails
                                     if (!searchInput) {
                                         searchInput = quickSearch.querySelector('input[type="search"], input[type="text"]');
+                                        console.log('[NAV] light DOM input:', searchInput);
                                     }
-                                    if (searchInput) searchInput.focus();
+                                    if (searchInput) {
+                                        console.log('[NAV] Focusing search input');
+                                        searchInput.focus();
+                                    } else {
+                                        console.log('[NAV] No input found in either shadow or light DOM');
+                                    }
                                 }
                             }, 50);
                         }, 50);
@@ -859,18 +869,28 @@
                     // Handle search link clicks (go back to root and focus search)
                     if (link.classList.contains('ff-mega-search-link')) {
                         e.preventDefault();
+                        console.log('[NAV] Mobile search link clicked');
                         goBack();
                         // Focus search input after animation completes
                         setTimeout(() => {
                             const quickSearch = document.querySelector('quick-search');
+                            console.log('[NAV] quick-search element:', quickSearch);
+                            console.log('[NAV] has shadowRoot:', quickSearch?.shadowRoot);
                             if (quickSearch) {
                                 // Try shadow DOM first (most likely case)
                                 let searchInput = quickSearch.shadowRoot?.querySelector('input[type="search"], input[type="text"]');
+                                console.log('[NAV] shadowRoot input:', searchInput);
                                 // Fallback to light DOM if shadow DOM fails
                                 if (!searchInput) {
                                     searchInput = quickSearch.querySelector('input[type="search"], input[type="text"]');
+                                    console.log('[NAV] light DOM input:', searchInput);
                                 }
-                                if (searchInput) searchInput.focus();
+                                if (searchInput) {
+                                    console.log('[NAV] Focusing search input');
+                                    searchInput.focus();
+                                } else {
+                                    console.log('[NAV] No input found in either shadow or light DOM');
+                                }
                             }
                         }, 400); // Wait longer for animation + mobile nav transitions
                         return;

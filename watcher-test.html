@@ -413,7 +413,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 70c6da8 | Add quick-search:open event dispatch to ff-mega-search-link handlers | 2026-01-14 23:50:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c Add mobile nav search link handler - go back to root and focus search input | 2026-01-14 23:55:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
@@ -806,6 +806,18 @@
                     if (link.hasAttribute('data-mobile-chrome-back')) {
                         e.preventDefault();
                         goBack();
+                        return;
+                    }
+                    // Handle search link clicks (go back to root and focus search)
+                    if (link.classList.contains('ff-mega-search-link')) {
+                        e.preventDefault();
+                        goBack();
+                        // Focus search input after animation completes
+                        setTimeout(() => {
+                            const quickSearch = mobileRoot.querySelector('quick-search');
+                            const searchInput = quickSearch?.querySelector('input[type="search"], input[type="text"]');
+                            if (searchInput) searchInput.focus();
+                        }, 250); // Slightly longer than animation time (200ms)
                         return;
                     }
                     const to = link.getAttribute('data-mobile-target');

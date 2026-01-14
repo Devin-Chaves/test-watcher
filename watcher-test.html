@@ -413,7 +413,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 37b0c18 | Increase z-index of exiting panels so they are visible during slide animation | 2026-01-14 23:30:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c 7d96859 | Skip offscreen positioning for animating panels to prevent opacity fade during slide | 2026-01-14 23:32:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
@@ -653,6 +653,11 @@
                             const nextDepth = layerDepth.get(key) || 1;
                             panels.forEach(p => {
                                 if (p !== next) {
+                                    // Skip panels that are currently animating (have exiting classes)
+                                    const isAnimating = p.classList.contains('ff-nav-mobile__panel--exiting-to-left') ||
+                                                       p.classList.contains('ff-nav-mobile__panel--exiting-to-right');
+                                    if (isAnimating) return;
+
                                     const pKey = p.getAttribute('data-mobile-panel');
                                     const pDepth = layerDepth.get(pKey) || 1;
 

@@ -526,6 +526,15 @@
                 });
 
                 shell.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+
+                // Handle search link clicks (open quick search)
+                const searchLinks = document.querySelectorAll('.ff-mega-search-link');
+                searchLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        document.dispatchEvent(new CustomEvent('quick-search:open'));
+                    });
+                });
             })();
 
             /* ========================= MOBILE NAV (STACK + FADE) + CHROME (LAYER 2+ ONLY) ========================= */

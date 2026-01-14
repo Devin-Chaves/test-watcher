@@ -343,13 +343,13 @@
             /* ENTERING ANIMATIONS */
             .ff-nav-mobile__panel--entering-from-right {
                 transform: translateX(100%);
-                opacity: 0;
+                opacity: 1;
                 z-index: 10;
             }
 
             .ff-nav-mobile__panel--entering-from-left {
                 transform: translateX(-100%);
-                opacity: 0;
+                opacity: 1;
                 z-index: 10;
             }
 
@@ -411,7 +411,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 7185bd6 | Implement 3-layer off-canvas sliding architecture with 3-phase RAF pattern | Forward/backward animations with directional classes, layer depth tracking, and reliable state sequencing | 2026-01-14 20:50:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c c68f5d9 | Fix panel animations - incoming panels fully opaque, all non-active panels positioned off-canvas to eliminate content bleed-through | 2026-01-14 23:15:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
@@ -646,6 +646,27 @@
                             // Activate incoming panel and remove its enter class to trigger slide+fade in
                             next.classList.add('ff-nav-mobile__panel--active');
                             next.classList.remove('ff-nav-mobile__panel--entering-from-right', 'ff-nav-mobile__panel--entering-from-left');
+
+                            // Position all non-active panels off-canvas based on their depth relative to the new active panel
+                            const nextDepth = layerDepth.get(key) || 1;
+                            panels.forEach(p => {
+                                if (p !== next) {
+                                    const pKey = p.getAttribute('data-mobile-panel');
+                                    const pDepth = layerDepth.get(pKey) || 1;
+
+                                    // Remove any existing off-canvas classes
+                                    p.classList.remove('ff-nav-mobile__panel--offscreen-left', 'ff-nav-mobile__panel--offscreen-right');
+
+                                    // Position based on depth
+                                    if (pDepth > nextDepth) {
+                                        // Panel is deeper, position to the right
+                                        p.classList.add('ff-nav-mobile__panel--offscreen-right');
+                                    } else {
+                                        // Panel is same depth or shallower, position to the left
+                                        p.classList.add('ff-nav-mobile__panel--offscreen-left');
+                                    }
+                                }
+                            });
 
                             // Update chrome bar
                             syncChrome();

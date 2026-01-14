@@ -527,11 +527,12 @@
 
                 shell.addEventListener('mouseenter', () => clearTimeout(closeTimer));
 
-                // Handle search link clicks (open quick search)
+                // Handle search link clicks (open quick search and close megamenu)
                 const searchLinks = document.querySelectorAll('.ff-mega-search-link');
                 searchLinks.forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
+                        close(); // Close megamenu when search is opened
                         document.dispatchEvent(new CustomEvent('quick-search:open'));
                     });
                 });

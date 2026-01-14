@@ -340,6 +340,44 @@
                 z-index: 2;
             }
 
+            /* ENTERING ANIMATIONS */
+            .ff-nav-mobile__panel--entering-from-right {
+                transform: translateX(100%);
+                opacity: 0;
+                z-index: 10;
+            }
+
+            .ff-nav-mobile__panel--entering-from-left {
+                transform: translateX(-100%);
+                opacity: 0;
+                z-index: 10;
+            }
+
+            /* EXITING ANIMATIONS */
+            .ff-nav-mobile__panel--exiting-to-left {
+                transform: translateX(-100%);
+                z-index: 5;
+            }
+
+            .ff-nav-mobile__panel--exiting-to-right {
+                transform: translateX(100%);
+                z-index: 5;
+            }
+
+            /* RESTING OFF-CANVAS POSITIONS */
+            .ff-nav-mobile__panel--offscreen-left {
+                transform: translateX(-100%);
+                opacity: 0;
+                pointer-events: none;
+                z-index: 0;
+            }
+
+            .ff-nav-mobile__panel--offscreen-right {
+                transform: translateX(100%);
+                opacity: 0;
+                pointer-events: none;
+                z-index: 0;
+            }
 
             @media (prefers-reduced-motion: reduce) {
                 .ff-nav-mobile__panel {
@@ -373,7 +411,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c Reverted to simple opacity fade - no slide animations | 2026-01-13 20:45:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c 3-layer off-canvas sliding architecture - forward/backward animations with 3-phase RAF pattern | 2026-01-14 20:50:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
@@ -507,6 +545,28 @@
                 let currentKey = 'root';
                 let lastFocus = null;
 
+                // Map panel keys to their depth in hierarchy
+                const layerDepth = new Map();
+
+                function calculateLayerDepth() {
+                    panels.forEach(panel => {
+                        const key = panel.getAttribute('data-mobile-panel');
+                        const parent = panel.getAttribute('data-panel-parent');
+
+                        if (key === 'root') {
+                            layerDepth.set(key, 1);
+                        } else if (!parent || parent === 'root') {
+                            layerDepth.set(key, 2);
+                        } else {
+                            const parentDepth = layerDepth.get(parent) || 1;
+                            layerDepth.set(key, parentDepth + 1);
+                        }
+                    });
+                }
+
+                // Call on init
+                calculateLayerDepth();
+
                 function syncChrome(){
                     const isSub = currentKey !== 'root';
                     mobileRoot.classList.toggle('ff-nav-mobile--chrome-on', isSub);
@@ -527,12 +587,88 @@
                     // Skip if already on this panel AND it already has the active class
                     if (currentKey === key && next.classList.contains('ff-nav-mobile__panel--active')) return;
 
+                    const prevKey = currentKey;
                     currentKey = key;
 
-                    // Simple opacity fade - all panels stay in place
-                    panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
-                    if (next) next.classList.add('ff-nav-mobile__panel--active');
-                    syncChrome();
+                    // PHASE 0: Calculate direction if not provided
+                    if (!direction) {
+                        const prevDepth = layerDepth.get(prevKey) || 1;
+                        const nextDepth = layerDepth.get(key) || 1;
+
+                        if (nextDepth > prevDepth) {
+                            direction = 'forward';
+                        } else if (nextDepth < prevDepth) {
+                            direction = 'backward';
+                        } else {
+                            // Same panel or same layer - just fade
+                            panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+                            next.classList.add('ff-nav-mobile__panel--active');
+                            syncChrome();
+                            return;
+                        }
+                    }
+
+                    // PHASE 1: Setup - Position all panels to proper off-canvas locations
+                    requestAnimationFrame(() => {
+                        // Clean up all directional classes from all panels
+                        panels.forEach(p => {
+                            p.classList.remove(
+                                'ff-nav-mobile__panel--entering-from-right',
+                                'ff-nav-mobile__panel--entering-from-left',
+                                'ff-nav-mobile__panel--exiting-to-left',
+                                'ff-nav-mobile__panel--exiting-to-right',
+                                'ff-nav-mobile__panel--offscreen-left',
+                                'ff-nav-mobile__panel--offscreen-right'
+                            );
+                        });
+
+                        // Position incoming panel at starting edge based on direction
+                        if (direction === 'forward') {
+                            next.classList.add('ff-nav-mobile__panel--entering-from-right');
+                        } else if (direction === 'backward') {
+                            next.classList.add('ff-nav-mobile__panel--entering-from-left');
+                        }
+
+                        // Position outgoing panel for exit (keep it active during this phase!)
+                        if (prev && prev !== next) {
+                            if (direction === 'forward') {
+                                prev.classList.add('ff-nav-mobile__panel--exiting-to-left');
+                            } else if (direction === 'backward') {
+                                prev.classList.add('ff-nav-mobile__panel--exiting-to-right');
+                            }
+                        }
+
+                        // PHASE 2: Trigger both animations simultaneously
+                        requestAnimationFrame(() => {
+                            // Deactivate all panels
+                            panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+
+                            // Activate incoming panel and remove its enter class to trigger slide+fade in
+                            next.classList.add('ff-nav-mobile__panel--active');
+                            next.classList.remove('ff-nav-mobile__panel--entering-from-right', 'ff-nav-mobile__panel--entering-from-left');
+
+                            // Update chrome bar
+                            syncChrome();
+
+                            // PHASE 3: Cleanup after animation completes
+                            setTimeout(() => {
+                                if (prev && prev !== next) {
+                                    // Remove exit classes from outgoing panel
+                                    prev.classList.remove('ff-nav-mobile__panel--exiting-to-left', 'ff-nav-mobile__panel--exiting-to-right');
+
+                                    // Position outgoing panel to proper off-canvas location based on depth
+                                    const prevDepth = layerDepth.get(prevKey) || 1;
+                                    const nextDepth = layerDepth.get(key) || 1;
+
+                                    if (prevDepth < nextDepth) {
+                                        prev.classList.add('ff-nav-mobile__panel--offscreen-left');
+                                    } else {
+                                        prev.classList.add('ff-nav-mobile__panel--offscreen-right');
+                                    }
+                                }
+                            }, 220); // Slightly longer than transition duration
+                        });
+                    });
                 }
 
                 function openMenu() {

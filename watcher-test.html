@@ -855,7 +855,7 @@
                         goBack();
                         // Focus search input after animation completes
                         setTimeout(() => {
-                            const quickSearch = mobileRoot.querySelector('quick-search');
+                            const quickSearch = document.querySelector('quick-search');
                             const searchInput = quickSearch?.querySelector('input[type="search"], input[type="text"]');
                             if (searchInput) searchInput.focus();
                         }, 250); // Slightly longer than animation time (200ms)

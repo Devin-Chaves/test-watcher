@@ -439,6 +439,7 @@
 
                 let activeKey = null;
                 let closeTimer = null;
+                let closingForSearch = false;
 
                 function setHeight(key) {
                     const navH = navBar.offsetHeight;
@@ -527,11 +528,53 @@
                 });
 
                 shell.addEventListener('mouseenter', () => {
-                    // Only clear timeout if there's an active menu (prevents reopening when closed)
+                    // Don't reopen if we just closed for search
+                    if (closingForSearch) return;
+                    // Only clear timeout if there's an active menu
                     if (activeKey !== null) {
                         clearTimeout(closeTimer);
                     }
                 });
+
+                // Handle search link clicks in megamenu
+                const searchLinks = document.querySelectorAll('.ff-mega-search-link');
+                searchLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        closingForSearch = true;
+                        close();
+                        // Reset flag after delay to allow normal mouseenter behavior
+                        setTimeout(() => {
+                            closingForSearch = false;
+                        }, 300);
+                        // Delay to ensure megamenu close is registered
+                        setTimeout(() => {
+                            document.dispatchEvent(new CustomEvent('quick-search:open'));
+                            // Focus search input in shadow DOM
+                            setTimeout(() => {
+                                const quickSearch = document.querySelector('quick-search');
+                                const searchInput = quickSearch?.querySelector('input[type="search"], input[type="text"]');
+                                if (searchInput) searchInput.focus();
+                            }, 50);
+                        }, 50);
+                    });
+                });
+
+                // Listen for search component getting focus and close megamenu as fallback
+                document.addEventListener('focus', (e) => {
+                    const quickSearch = document.querySelector('quick-search');
+                    if (quickSearch && (quickSearch.contains(e.target) || e.target === quickSearch)) {
+                        // Close megamenu if search is getting focus
+                        if (activeKey !== null) {
+                            closingForSearch = true;
+                            close();
+                            setTimeout(() => {
+                                closingForSearch = false;
+                            }, 300);
+                        }
+                    }
+                }, true); // Use capture phase to catch focus before bubbling
 
             })();
 

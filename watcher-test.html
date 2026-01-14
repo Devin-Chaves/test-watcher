@@ -532,8 +532,12 @@
                 searchLinks.forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
+                        e.stopPropagation(); // Prevent event bubbling
                         close(); // Close megamenu when search is opened
-                        document.dispatchEvent(new CustomEvent('quick-search:open'));
+                        // Delay search open slightly to ensure megamenu close is registered
+                        setTimeout(() => {
+                            document.dispatchEvent(new CustomEvent('quick-search:open'));
+                        }, 50);
                     });
                 });
             })();

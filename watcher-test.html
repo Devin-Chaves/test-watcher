@@ -413,7 +413,7 @@
 <body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('%c[NAV]%c 64ff5f1 | Skip offscreen positioning for animating panels to prevent opacity fade during slide | 2026-01-14 23:32:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+            console.log('%c[NAV]%c b5e6476 | Skip opacity fade for backward navigation - only slide exiting panels when going back | 2026-01-14 23:35:00 EST', 'color: #4CAF50; font-weight: bold', 'color: inherit');
 
             const mqMobile = window.matchMedia('(max-width: 991px)');
             
@@ -642,10 +642,17 @@
 
                         // PHASE 2: Trigger both animations simultaneously
                         requestAnimationFrame(() => {
-                            // Deactivate all panels
-                            panels.forEach(p => p.classList.remove('ff-nav-mobile__panel--active'));
+                            // Deactivate all panels EXCEPT the exiting panel when going backward
+                            // (backward exit should only slide, not fade)
+                            panels.forEach(p => {
+                                if (direction === 'backward' && p === prev) {
+                                    // Keep exiting panel active when going backward (maintains opacity: 1, no fade)
+                                    return;
+                                }
+                                p.classList.remove('ff-nav-mobile__panel--active');
+                            });
 
-                            // Activate incoming panel and remove its enter class to trigger slide+fade in
+                            // Activate incoming panel and remove its enter class to trigger slide in
                             next.classList.add('ff-nav-mobile__panel--active');
                             next.classList.remove('ff-nav-mobile__panel--entering-from-right', 'ff-nav-mobile__panel--entering-from-left');
 
@@ -683,6 +690,9 @@
                                 if (prev && prev !== next) {
                                     // Remove exit classes from outgoing panel
                                     prev.classList.remove('ff-nav-mobile__panel--exiting-to-left', 'ff-nav-mobile__panel--exiting-to-right');
+
+                                    // Remove active class if it's still there (was kept for backward animation)
+                                    prev.classList.remove('ff-nav-mobile__panel--active');
 
                                     // Position outgoing panel to proper off-canvas location based on depth
                                     const prevDepth = layerDepth.get(prevKey) || 1;

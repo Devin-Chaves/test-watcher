@@ -438,7 +438,6 @@
 
                 let activeKey = null;
                 let closeTimer = null;
-                let isClosingForSearch = false; // Flag to prevent mouseenter from clearing close during search focus
 
                 function setHeight(key) {
                     const navH = navBar.offsetHeight;
@@ -527,30 +526,12 @@
                 });
 
                 shell.addEventListener('mouseenter', () => {
-                    // Don't clear the close timer if we just closed for search (search input is about to get focus)
-                    if (!isClosingForSearch) {
+                    // Only clear timeout if there's an active menu (prevents reopening when closed)
+                    if (activeKey !== null) {
                         clearTimeout(closeTimer);
                     }
                 });
 
-                // Handle search link clicks (open quick search and close megamenu)
-                const searchLinks = document.querySelectorAll('.ff-mega-search-link');
-                searchLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation(); // Prevent event bubbling
-                        isClosingForSearch = true; // Flag to prevent mouseenter from reopening
-                        close(); // Close megamenu when search is opened
-                        // Delay search open slightly to ensure megamenu close is registered
-                        setTimeout(() => {
-                            document.dispatchEvent(new CustomEvent('quick-search:open'));
-                        }, 50);
-                        // Reset flag after search input gets focus (300ms should be enough)
-                        setTimeout(() => {
-                            isClosingForSearch = false;
-                        }, 300);
-                    });
-                });
             })();
 
             /* ========================= MOBILE NAV (STACK + FADE) + CHROME (LAYER 2+ ONLY) ========================= */

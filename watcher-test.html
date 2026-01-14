@@ -536,8 +536,8 @@
                     }
                 });
 
-                // Handle search link clicks in megamenu
-                const searchLinks = document.querySelectorAll('.ff-mega-search-link');
+                // Handle search link clicks in megamenu (scoped to mega element only)
+                const searchLinks = mega.querySelectorAll('.ff-mega-search-link');
                 searchLinks.forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();

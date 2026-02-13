@@ -5,12 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biomarkers</title>
     <style>
-
+        .biomarkers-test {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
     <script>
-        console.log('%c[BIOMARKERS]%c Initial setup | 2026-02-13', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+        console.log('%c[BIOMARKERS]%c Test embed working | 2026-02-13', 'color: #4CAF50; font-weight: bold', 'color: inherit');
+
+        var testEl = document.createElement('div');
+        testEl.className = 'biomarkers-test';
+        testEl.textContent = 'Biomarkers embed working!';
+        document.body.appendChild(testEl);
     </script>
 </body>
 </html>

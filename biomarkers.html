@@ -6,7 +6,8 @@
     <title>Biomarkers</title>
     <style>
 
-        .longev-bio__carousel {
+        .longev-bio__carousel,
+        .longev-bio__carousel--mobile {
             overflow-x: auto;
             overflow-y: hidden;
             width: 100%;
@@ -19,7 +20,8 @@
             scroll-padding: 0 max(5%, calc((100vw - 74rem) / 2));
         }
 
-        .longev-bio__carousel::-webkit-scrollbar {
+        .longev-bio__carousel::-webkit-scrollbar,
+        .longev-bio__carousel--mobile::-webkit-scrollbar {
             display: none;
         }
 
@@ -42,18 +44,12 @@
     <script>
         var testEl = document.createElement('div');
         testEl.className = 'biomarkers-test';
-        testEl.textContent = 'Last updated: 2026-02-13 07:05 AM EST';
+        testEl.textContent = 'Last updated: 2026-02-13 07:28 AM EST';
         document.body.appendChild(testEl);
 
-        function initBiomarkersCarousel() {
-            const carousel = document.querySelector('.longev-bio__carousel');
-            if (!carousel) {
-                setTimeout(initBiomarkersCarousel, 100);
-                return;
-            }
-
-            const prevBtn = document.querySelector('.longev-bio__controls__prev');
-            const nextBtn = document.querySelector('.longev-bio__controls__next');
+        function setupCarousel(carousel, controlsContainer) {
+            const prevBtn = controlsContainer.querySelector('.longev-bio__controls__prev');
+            const nextBtn = controlsContainer.querySelector('.longev-bio__controls__next');
             const track = carousel.querySelector('.longev-bio__track');
 
             // Calculate scroll amount dynamically based on viewport and card dimensions
@@ -103,6 +99,35 @@
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(updateScrollState, 150);
             });
+        }
+
+        function initBiomarkersCarousel() {
+            // Initialize desktop carousel
+            const carousel = document.querySelector('.longev-bio__carousel');
+            const carouselMobile = document.querySelector('.longev-bio__carousel--mobile');
+
+            if (!carousel && !carouselMobile) {
+                setTimeout(initBiomarkersCarousel, 100);
+                return;
+            }
+
+            // Setup desktop carousel
+            if (carousel) {
+                const controlsContainer = carousel.closest('[class*="longev-bio"]').querySelector('.longev-bio__controls') ||
+                                         document.querySelector('.longev-bio__controls');
+                if (controlsContainer) {
+                    setupCarousel(carousel, controlsContainer);
+                }
+            }
+
+            // Setup mobile carousel
+            if (carouselMobile) {
+                const mobileControlsContainer = carouselMobile.closest('[class*="longev-bio"]').querySelector('.longev-bio__controls') ||
+                                                document.querySelectorAll('.longev-bio__controls')[1];
+                if (mobileControlsContainer) {
+                    setupCarousel(carouselMobile, mobileControlsContainer);
+                }
+            }
         }
 
         if (document.readyState === 'loading') {

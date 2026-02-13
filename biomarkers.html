@@ -42,90 +42,94 @@
     <script>
         var testEl = document.createElement('div');
         testEl.className = 'biomarkers-test';
-        testEl.textContent = 'Last updated: 2026-02-13 07:29 AM EST';
+        testEl.textContent = 'Last updated: 2026-02-13 07:33 AM EST';
         document.body.appendChild(testEl);
 
-        function setupCarousel(carousel, controlsContainer) {
+        function initBiomarkersCarousel() {
+            const desktopCarousel = document.querySelector('.longev-bio__carousel:not(.longev-bio__carousel--mobile)');
+            const mobileCarousel = document.querySelector('.longev-bio__carousel--mobile');
+            const controlsContainer = document.querySelector('.longev-bio__controls');
+
+            if (!controlsContainer || (!desktopCarousel && !mobileCarousel)) {
+                setTimeout(initBiomarkersCarousel, 100);
+                return;
+            }
+
             const prevBtn = controlsContainer.querySelector('.longev-bio__controls__prev');
             const nextBtn = controlsContainer.querySelector('.longev-bio__controls__next');
-            const track = carousel.querySelector('.longev-bio__track');
 
-            // Calculate scroll amount dynamically based on viewport and card dimensions
-            const getScrollAmount = () => {
+            // Get the currently visible carousel
+            const getVisibleCarousel = () => {
+                if (mobileCarousel && window.getComputedStyle(mobileCarousel).display !== 'none') {
+                    return mobileCarousel;
+                }
+                if (desktopCarousel && window.getComputedStyle(desktopCarousel).display !== 'none') {
+                    return desktopCarousel;
+                }
+                return mobileCarousel || desktopCarousel;
+            };
+
+            // Calculate scroll amount for current carousel
+            const getScrollAmount = (carousel) => {
+                if (!carousel) return 320;
                 const firstCard = carousel.querySelector('.longev-caro-card');
                 if (!firstCard) return 320;
 
+                const track = carousel.querySelector('.longev-bio__track');
                 const trackStyles = track ? window.getComputedStyle(track) : null;
                 const gap = trackStyles ? parseInt(trackStyles.gap) || 24 : 24;
-
-                // Get actual rendered card width
                 const cardWidth = firstCard.offsetWidth;
                 return cardWidth + gap;
             };
 
-            // Update prev button state based on scroll position
+            // Update prev button state
             const updateScrollState = () => {
-                if (prevBtn) {
-                    const isPastFirstCard = carousel.scrollLeft > 1;
+                const activeCarousel = getVisibleCarousel();
+                if (prevBtn && activeCarousel) {
+                    const isPastFirstCard = activeCarousel.scrollLeft > 1;
                     prevBtn.style.opacity = isPastFirstCard ? '1' : '0.3';
                     prevBtn.style.pointerEvents = isPastFirstCard ? 'auto' : 'none';
                 }
             };
 
-            carousel.addEventListener('scroll', updateScrollState);
+            // Add scroll listeners to both carousels
+            if (desktopCarousel) {
+                desktopCarousel.addEventListener('scroll', updateScrollState);
+            }
+            if (mobileCarousel) {
+                mobileCarousel.addEventListener('scroll', updateScrollState);
+            }
+
             updateScrollState();
 
             if (prevBtn) {
                 prevBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const scrollAmount = getScrollAmount();
-                    carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    const activeCarousel = getVisibleCarousel();
+                    if (activeCarousel) {
+                        const scrollAmount = getScrollAmount(activeCarousel);
+                        activeCarousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    }
                 });
             }
 
             if (nextBtn) {
                 nextBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const scrollAmount = getScrollAmount();
-                    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    const activeCarousel = getVisibleCarousel();
+                    if (activeCarousel) {
+                        const scrollAmount = getScrollAmount(activeCarousel);
+                        activeCarousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    }
                 });
             }
 
-            // Recalculate on resize for responsive behavior
+            // Update on resize
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(updateScrollState, 150);
             });
-        }
-
-        function initBiomarkersCarousel() {
-            // Initialize desktop carousel
-            const carousel = document.querySelector('.longev-bio__carousel');
-            const carouselMobile = document.querySelector('.longev-bio__carousel--mobile');
-
-            if (!carousel && !carouselMobile) {
-                setTimeout(initBiomarkersCarousel, 100);
-                return;
-            }
-
-            // Setup desktop carousel
-            if (carousel) {
-                const controlsContainer = carousel.closest('[class*="longev-bio"]').querySelector('.longev-bio__controls') ||
-                                         document.querySelector('.longev-bio__controls');
-                if (controlsContainer) {
-                    setupCarousel(carousel, controlsContainer);
-                }
-            }
-
-            // Setup mobile carousel
-            if (carouselMobile) {
-                const mobileControlsContainer = carouselMobile.closest('[class*="longev-bio"]').querySelector('.longev-bio__controls') ||
-                                                document.querySelectorAll('.longev-bio__controls')[1];
-                if (mobileControlsContainer) {
-                    setupCarousel(carouselMobile, mobileControlsContainer);
-                }
-            }
         }
 
         if (document.readyState === 'loading') {

@@ -26,7 +26,6 @@
         .longev-bio__track {
             display: flex;
             align-items: stretch;
-            gap: 16px;
             padding: 0 max(5%, calc((100vw - 74rem) / 2));
         }
 
@@ -41,7 +40,7 @@
     <script>
         var testEl = document.createElement('div');
         testEl.className = 'biomarkers-test';
-        testEl.textContent = 'Last updated: 2026-02-13 05:33 AM EST';
+        testEl.textContent = 'Last updated: 2026-02-13 05:43 AM EST';
         document.body.appendChild(testEl);
 
         function initBiomarkersCarousel() {
@@ -53,13 +52,20 @@
 
             const prevBtn = document.querySelector('.longev-bio__controls__prev');
             const nextBtn = document.querySelector('.longev-bio__controls__next');
-
-            // Calculate scroll amount based on first card width + gap
-            const firstCard = carousel.querySelector('.longev-caro-card');
             const track = carousel.querySelector('.longev-bio__track');
-            const trackStyles = track ? window.getComputedStyle(track) : null;
-            const gap = trackStyles ? parseInt(trackStyles.gap) || 16 : 16;
-            const scrollAmount = firstCard ? firstCard.offsetWidth + gap : 320;
+
+            // Calculate scroll amount dynamically based on viewport and card dimensions
+            const getScrollAmount = () => {
+                const firstCard = carousel.querySelector('.longev-caro-card');
+                if (!firstCard) return 320;
+
+                const trackStyles = track ? window.getComputedStyle(track) : null;
+                const gap = trackStyles ? parseInt(trackStyles.gap) || 24 : 24;
+
+                // Get actual rendered card width
+                const cardWidth = firstCard.offsetWidth;
+                return cardWidth + gap;
+            };
 
             // Update prev button state based on scroll position
             const updateScrollState = () => {
@@ -76,6 +82,7 @@
             if (prevBtn) {
                 prevBtn.addEventListener('click', (e) => {
                     e.preventDefault();
+                    const scrollAmount = getScrollAmount();
                     carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
                 });
             }
@@ -83,9 +90,17 @@
             if (nextBtn) {
                 nextBtn.addEventListener('click', (e) => {
                     e.preventDefault();
+                    const scrollAmount = getScrollAmount();
                     carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                 });
             }
+
+            // Recalculate on resize for responsive behavior
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(updateScrollState, 150);
+            });
         }
 
         if (document.readyState === 'loading') {

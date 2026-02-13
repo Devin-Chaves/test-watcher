@@ -42,93 +42,64 @@
     <script>
         var testEl = document.createElement('div');
         testEl.className = 'biomarkers-test';
-        testEl.textContent = 'Last updated: 2026-02-13 07:33 AM EST';
+        testEl.textContent = 'Last updated: 2026-02-13 07:36 AM EST';
         document.body.appendChild(testEl);
 
         function initBiomarkersCarousel() {
-            const desktopCarousel = document.querySelector('.longev-bio__carousel:not(.longev-bio__carousel--mobile)');
-            const mobileCarousel = document.querySelector('.longev-bio__carousel--mobile');
-            const controlsContainer = document.querySelector('.longev-bio__controls');
+            const carousels = document.querySelectorAll('.longev-bio__carousel');
+            const allControls = document.querySelectorAll('.longev-bio__controls');
 
-            if (!controlsContainer || (!desktopCarousel && !mobileCarousel)) {
+            if (carousels.length === 0 || allControls.length === 0) {
                 setTimeout(initBiomarkersCarousel, 100);
                 return;
             }
 
-            const prevBtn = controlsContainer.querySelector('.longev-bio__controls__prev');
-            const nextBtn = controlsContainer.querySelector('.longev-bio__controls__next');
-
-            // Get the currently visible carousel
-            const getVisibleCarousel = () => {
-                if (mobileCarousel && window.getComputedStyle(mobileCarousel).display !== 'none') {
-                    return mobileCarousel;
-                }
-                if (desktopCarousel && window.getComputedStyle(desktopCarousel).display !== 'none') {
-                    return desktopCarousel;
-                }
-                return mobileCarousel || desktopCarousel;
-            };
-
-            // Calculate scroll amount for current carousel
-            const getScrollAmount = (carousel) => {
-                if (!carousel) return 320;
-                const firstCard = carousel.querySelector('.longev-caro-card');
-                if (!firstCard) return 320;
-
+            // Setup each carousel with its controls
+            carousels.forEach((carousel, index) => {
+                const controls = allControls[index] || allControls[0];
+                const prevBtn = controls.querySelector('.longev-bio__controls__prev');
+                const nextBtn = controls.querySelector('.longev-bio__controls__next');
                 const track = carousel.querySelector('.longev-bio__track');
-                const trackStyles = track ? window.getComputedStyle(track) : null;
-                const gap = trackStyles ? parseInt(trackStyles.gap) || 24 : 24;
-                const cardWidth = firstCard.offsetWidth;
-                return cardWidth + gap;
-            };
 
-            // Update prev button state
-            const updateScrollState = () => {
-                const activeCarousel = getVisibleCarousel();
-                if (prevBtn && activeCarousel) {
-                    const isPastFirstCard = activeCarousel.scrollLeft > 1;
-                    prevBtn.style.opacity = isPastFirstCard ? '1' : '0.3';
-                    prevBtn.style.pointerEvents = isPastFirstCard ? 'auto' : 'none';
+                const getScrollAmount = () => {
+                    const firstCard = carousel.querySelector('.longev-caro-card');
+                    if (!firstCard) return 320;
+
+                    const trackStyles = track ? window.getComputedStyle(track) : null;
+                    const gap = trackStyles ? parseInt(trackStyles.gap) || 24 : 24;
+                    return firstCard.offsetWidth + gap;
+                };
+
+                const updateScrollState = () => {
+                    if (prevBtn) {
+                        const isPastFirstCard = carousel.scrollLeft > 1;
+                        prevBtn.style.opacity = isPastFirstCard ? '1' : '0.3';
+                        prevBtn.style.pointerEvents = isPastFirstCard ? 'auto' : 'none';
+                    }
+                };
+
+                carousel.addEventListener('scroll', updateScrollState);
+                updateScrollState();
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        carousel.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+                    });
                 }
-            };
 
-            // Add scroll listeners to both carousels
-            if (desktopCarousel) {
-                desktopCarousel.addEventListener('scroll', updateScrollState);
-            }
-            if (mobileCarousel) {
-                mobileCarousel.addEventListener('scroll', updateScrollState);
-            }
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        carousel.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+                    });
+                }
 
-            updateScrollState();
-
-            if (prevBtn) {
-                prevBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const activeCarousel = getVisibleCarousel();
-                    if (activeCarousel) {
-                        const scrollAmount = getScrollAmount(activeCarousel);
-                        activeCarousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-                    }
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(updateScrollState, 150);
                 });
-            }
-
-            if (nextBtn) {
-                nextBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const activeCarousel = getVisibleCarousel();
-                    if (activeCarousel) {
-                        const scrollAmount = getScrollAmount(activeCarousel);
-                        activeCarousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                    }
-                });
-            }
-
-            // Update on resize
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(updateScrollState, 150);
             });
         }
 

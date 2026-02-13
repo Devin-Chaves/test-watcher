@@ -41,8 +41,58 @@
     <script>
         var testEl = document.createElement('div');
         testEl.className = 'biomarkers-test';
-        testEl.textContent = 'Last updated: 2026-02-13 05:06 AM EST';
+        testEl.textContent = 'Last updated: 2026-02-13 05:33 AM EST';
         document.body.appendChild(testEl);
+
+        function initBiomarkersCarousel() {
+            const carousel = document.querySelector('.longev-bio__carousel');
+            if (!carousel) {
+                setTimeout(initBiomarkersCarousel, 100);
+                return;
+            }
+
+            const prevBtn = document.querySelector('.longev-bio__controls__prev');
+            const nextBtn = document.querySelector('.longev-bio__controls__next');
+
+            // Calculate scroll amount based on first card width + gap
+            const firstCard = carousel.querySelector('.longev-caro-card');
+            const track = carousel.querySelector('.longev-bio__track');
+            const trackStyles = track ? window.getComputedStyle(track) : null;
+            const gap = trackStyles ? parseInt(trackStyles.gap) || 16 : 16;
+            const scrollAmount = firstCard ? firstCard.offsetWidth + gap : 320;
+
+            // Update prev button state based on scroll position
+            const updateScrollState = () => {
+                if (prevBtn) {
+                    const isPastFirstCard = carousel.scrollLeft > 1;
+                    prevBtn.style.opacity = isPastFirstCard ? '1' : '0.3';
+                    prevBtn.style.pointerEvents = isPastFirstCard ? 'auto' : 'none';
+                }
+            };
+
+            carousel.addEventListener('scroll', updateScrollState);
+            updateScrollState();
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initBiomarkersCarousel);
+        } else {
+            initBiomarkersCarousel();
+        }
     </script>
 </body>
 </html>

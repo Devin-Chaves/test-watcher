@@ -20,13 +20,30 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
         }
+
+        .longev-bio__carousel {
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .longev-bio__track {
+            display: flex;
+            padding-left: max(60px, calc((100% - 1184px) / 2 + 60px));
+            padding-right: 60px;
+            scroll-snap-type: x mandatory;
+        }
+
+        .longev-bio__card {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
     <script>
         var testEl = document.createElement('div');
         testEl.className = 'biomarkers-test';
-        testEl.textContent = 'Last updated: 2026-02-13 02:52 AM EST';
+        testEl.textContent = 'Last updated: 2026-02-13 04:35 AM EST';
         document.body.appendChild(testEl);
     </script>
 </body>

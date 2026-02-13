@@ -6,8 +6,7 @@
     <title>Biomarkers</title>
     <style>
 
-        .longev-bio__carousel,
-        .longev-bio__carousel--mobile {
+        .longev-bio__carousel {
             overflow-x: auto;
             overflow-y: hidden;
             width: 100%;
@@ -20,8 +19,7 @@
             scroll-padding: 0 max(5%, calc((100vw - 74rem) / 2));
         }
 
-        .longev-bio__carousel::-webkit-scrollbar,
-        .longev-bio__carousel--mobile::-webkit-scrollbar {
+        .longev-bio__carousel::-webkit-scrollbar {
             display: none;
         }
 
@@ -44,7 +42,7 @@
     <script>
         var testEl = document.createElement('div');
         testEl.className = 'biomarkers-test';
-        testEl.textContent = 'Last updated: 2026-02-13 07:28 AM EST';
+        testEl.textContent = 'Last updated: 2026-02-13 07:29 AM EST';
         document.body.appendChild(testEl);
 
         function setupCarousel(carousel, controlsContainer) {

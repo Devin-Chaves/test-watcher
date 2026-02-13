@@ -24,6 +24,12 @@
         .longev-bio__carousel {
             overflow-x: auto;
             overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .longev-bio__carousel::-webkit-scrollbar {
+            display: none;
         }
 
         .longev-bio__track {
@@ -34,8 +40,8 @@
         }
 
         .longev-caro-card {
-            scroll-snap-align: start;
-            flex-shrink: 0;
+            scroll-snap-align: start !important;
+            flex-shrink: 0 !important;
         }
     </style>
 </head>
@@ -43,7 +49,7 @@
     <script>
         var testEl = document.createElement('div');
         testEl.className = 'biomarkers-test';
-        testEl.textContent = 'Last updated: 2026-02-13 04:38 AM EST';
+        testEl.textContent = 'Last updated: 2026-02-13 04:41 AM EST';
         document.body.appendChild(testEl);
     </script>
 </body>

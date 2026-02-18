@@ -17,6 +17,13 @@
             scrollbar-width: none;
             -ms-overflow-style: none;
             scroll-padding: 0 max(5%, calc((100vw - 74rem) / 2));
+            scroll-padding-inline-end: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .longev-bio__carousel {
+                scroll-padding-inline-end: 20px;
+            }
         }
 
         .longev-bio__carousel::-webkit-scrollbar {

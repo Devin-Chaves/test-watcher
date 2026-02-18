@@ -38,9 +38,14 @@
         }
 
         .longev-bio__controls__prev svg,
-        .longev-bio__controls__prev svg *,
+        .longev-bio__controls__prev svg * {
+            fill: #91908F;
+            transition: fill 0.3s ease;
+        }
+
         .longev-bio__controls__next svg,
         .longev-bio__controls__next svg * {
+            fill: #31302F;
             transition: fill 0.3s ease;
         }
     </style>
@@ -81,18 +86,11 @@ function initBiomarkersCarousel() {
                     const atStart = carousel.scrollLeft <= 1;
                     const atEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 1;
 
-                    if (prevBtn) {
-                        prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
-                        setSvgFill(prevBtn, atStart ? '#91908F' : '');
-                    }
-                    if (nextBtn) {
-                        nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
-                        setSvgFill(nextBtn, atEnd ? '#91908F' : '');
-                    }
+                    setSvgFill(prevBtn, atStart ? '#91908F' : '#31302F');
+                    setSvgFill(nextBtn, atEnd ? '#91908F' : '#31302F');
                 };
 
                 carousel.addEventListener('scroll', updateScrollState);
-                updateScrollState();
 
                 if (prevBtn) {
                     prevBtn.addEventListener('click', (e) => {
